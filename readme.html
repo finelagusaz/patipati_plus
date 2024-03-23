@@ -1,0 +1,431 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<title>PatiPati - Readme</title>
+<style type="text/css">
+<!--
+	body, tr, td {
+		margin-top:0.7em;
+		margin-left:0.7em;
+		color:#666666;
+		font-size:12px;
+		line-height:120%;
+	}
+	big { font-size:14px ;}
+	small { font-size:10px ;}
+-->
+</style>
+</head>
+<body text="#666666" bgcolor="#ffffff">
+このスクリプトはPerl5以上の環境で動作します。<br>
+<TABLE cellspacing="1" cellpadding="4" border="0" width="750" bgcolor="#cc0000">
+  <tr>
+    <TD valign="top" bgcolor="#ffffec">注意点：<BR>
+      　このファイルセットは<A href="http://www.gnbnet.com/" target="_blank"><FONT color="#333333">HAL様</FONT></A>作「PatiPati」をベースに、とわが部分的な機能追加を行なったものです。<BR>
+      　このファイルセットを使用した上での質問等は全て<A href="http://www3.to/gift" target="_blank"><FONT color="#333333">とわ宛</FONT></A>にお願いします。<BR>
+      　オリジナル配布元へ改造版の質問等なさらないようお願いいたします。<BR><BR>
+       改変部分履歴：<br>
+        <TABLE border="0" cellspacing="0" cellpadding="5" width="746">
+          
+          
+          
+          
+          <TR>
+            <TD valign="top">2008/03/12</TD>
+            <TD>Ver4.3 ＋Towa （phase5）<BR>
+            本家GNBバージョンアップ（4.2→4.3）内容反映。<BR><BR>
+            phase5<BR>
+            英数半角のみのスパム対策で、メインフォーム以外に入力があったとき無効となっていた問題を解決。<BR>
+            NGワードに「http」を指定してもスルーしてくるスパムをブロックする機能を追加。<BR>
+            <BR>
+            既存ユーザーの方々について。既にVer4.0以降を導入済みの方は<BR>
+            「index.cgi」「sub.pl」ファイルを最新のものに差し替えてご利用ください。<BR>
+            また、「preset.cgi」の英数半角スパム用設定「$delspam」が変更になっています。<BR>
+            ［旧：0=有効 1=無効 が 新：0=無効 1=有効］となります。<BR>
+            同じく「preset.cgi」に新規設定項目が追加されました。「$kickurl」です。<BR>
+            新規辞書よりコピーしてご利用ください。<BR>
+エラーメッセージを追記しました。<BR>カスタマイズしてない方は「error.html」も差し替えてください。<BR>
+            </TD>
+          </TR>
+          <TR>
+            <TD valign="top">2007/06/02</TD>
+            <TD valign="top">Ver4.2 ＋Towa （phase4）<BR>
+            本家GNBバージョンアップ（4.1→4.2）内容反映。<BR><BR>
+            既存ユーザーの方々について。既にVer4.0以降を導入済みの方は<BR>
+            「sub.pl」ファイルを最新のものに差し替えてご利用ください。<BR>
+            書き替え等は特にありません。<BR>
+            </TD>
+          </TR>
+          <TR>
+            <TD valign="top">2007/03/12</TD>
+            <TD>Ver4.1 ＋Towa （phase4）<BR>
+            本家GNBバージョンアップ（4.0→4.1）内容反映。<BR><BR>
+            既存ユーザーの方々について。既にVer4.0 を導入済みの方は<BR>
+            「view.cgi」「sub.pl」ファイルを最新のものに差し替えてご利用ください。<BR>
+            書き替え等は特にありません。<BR>
+            </TD>
+          </TR>
+          <TR>
+            <TD valign="top">2007/03/10</TD>
+            <TD>Ver4.0 ＋Towa （phase4）<BR>
+            本家GNBバージョンアップ（3.2→4.0）内容取り込み。<BR>
+            なお、「ログファイル拡張子を自由に変更できるように修正。」については<BR>
+            phase2にて出力ファイルを.logから.cgiに変更済みのため今回は反映しておりません。<BR>
+            <BR>
+            既存ユーザーの方々について。<BR>
+            変更点については「view.cgi」「sub.pl」ファイルを最新のものに差し替えた上で<BR>
+            「preset.cgi」に新規設定項目（$view_pre）を追記してバージョンアップしてください。<BR>
+            </TD>
+          </TR>
+          <TR>
+            <TD valign="top">2006/11/24</TD>
+            <TD>Ver3.2 ＋Towa （phase4）<BR>
+            本家GNBバージョンアップ（3.1→3.2）内容取り込み。<BR>
+            <BR>
+            既存ユーザーの方々について。<BR>
+            変更点については「view.cgi」ファイルを最新のものに差し替えてください。<BR>
+</TD>
+          </TR>
+          <TR>
+            <TD valign="top">2006/11/2</TD>
+            <TD>Ver3.1 ＋Towa （phase4）<BR>
+            本家GNBバージョンアップ（3.0→3.1）内容取り込み。<BR>
+            niftyなどのサーバー用モード、$shell_use =
+            1; に設定した時のビュー画面のバグ修正。<BR>
+            NGワード送信後のメッセージ見せかけ機能実装。<BR>
+            NGワードの日本語のNGワードは送られてしまうバグ修正。<BR>
+            <BR>
+            既存ユーザーの方々について。<BR>
+            NGワード送信後のメッセージ見せかけ機能については「preset.cgi」に「$ng_ck_msg」の記述を追加することで実現できます。<BR>
+            （書式については最新preset.cgi内を参照してください）<BR>
+            その他の変更点については「index.cgi」「view.cgi」「sub.pl」ファイルを最新のものに差し替えてください。</TD>
+          </TR>
+          <TR>
+            <TD valign="top">2006/10/25</TD>
+            <TD>Ver3.0 ＋Towa （phase4）<BR>
+            スパム対策版。<BR>
+            preset.cgiのNGワードにデフォルトでスパム投稿対策ワードをセット。<BR>
+            英数半角のみの投稿制限機能追加。設定で許可することも出来ます。<BR>
+            禁止ワードについては「preset.cgi」のNGワード設定部分を参照してください。<BR><BR>
+            既存ユーザーの方々について。<BR>
+            英数半角のみの投稿の遮断については「preset.cgi」の「$delspam」にて設定変更が可能です。<BR>
+            設定済みのpreset.cgiに「$delspam」項目を追加するだけでスイッチ機能が利用できます。<BR>
+            英数半角のみの投稿制限機能使用に際しては「index.cgi」を最新のものに変更してください。<BR>
+            （ファイル名を変えている場合はindex.cgiに相当するファイルの2行目以降全てを新規スクリプト内容と差し替えて使用してください）</TD>
+          </TR>
+          <TR>
+            <TD valign="top" width="60">2006/08/31</TD>
+            <TD width="666">Ver3.0 ＋Towa （phase3）<BR>
+            本家GNBサポート掲示板バグフィックス取り込み。<BR>
+            （IE7環境でログ画面が全て左フレーム内に表示＝view.cgiを新規ファイルと差し替えてください）<BR>
+            （NGワードが反映されない＝index.cgi
+            を新規ファイルと差し替えてください）<BR>
+            readme.html内容変更部分の反映（<A href="#4" target="_self">フォームの追加方法</A>、追記部分）</TD>
+          </TR>
+        </TABLE>
+      <TABLE border="0" cellspacing="0" cellpadding="5">
+        
+          <TR>
+            <TD valign="top">2006/07/03</TD>
+            <TD>Ver3.0 ＋Towa （phase2）<BR>
+            「ログディレクトリ名変更推奨」の注意書き。<BR>
+            設置方法変更。ログディレクトリとロックディレクトリ、blist.txt、lock.txt、index.htmlを自動生成に。<BR>
+            ログファイルの出力形式を.logから.cgiに変更。<BR>
+            拍手音付きサンプルhtmlと拍手音素材同梱。<BR>
+            前回からの変更ファイルは「index.cgi」「view.cgi」「sub.pl」<BR>
+            「preset.cgi」内設定項目「$Gindex
+            」追加。「view2.cgi」ファイル追加。</TD>
+          </TR>
+          <tr>
+            <td valign="top">2006/03/10</td>
+            <TD width="666">Ver3.0 ＋Towa<BR>
+            メッセージ送信時に、送信内容を送信後画面に表示。<BR>
+            拍手回数制限無し設定、文字数制限無し設定を送信画面に反映（共に設定はpreset.cgi内）<BR>
+            変更ファイルは「index.cgi」「thanks.html」「thanks2.html」となっています。</TD>
+          </tr>
+          <TR>
+            <td valign="top">メモ</TD>
+            <TD>・お礼画面を増やす時は「thanks.html」「thanks2.html」等のサンプルをコピーして作ってください。<BR>
+            ・お礼画面デザインは「style.css」で配色等変更可能です。<BR>
+            ・CGIファイルに改造を加えたときは必ずEUCにて保存してください。
+　　<FONT size="-2" color="#999999">（以上、オリジナルのreadme.htmlに追記)</FONT></TD>
+          </TR>
+        
+      </TABLE>
+      <table cellspacing=1 cellpadding=4 border=0 width="750" bgcolor="#CC0000">
+  <tr>
+    <td valign="top" bgcolor="#FFFFFF">改定履歴：オリジナル版<FONT size="2">（ver3.1送信メッセージ表示については改造版で実装済みのため割愛）</FONT><br>
+        <table border="0" cellspacing="0" cellpadding="2">
+          
+                
+                
+                
+                <TR>
+                  <TD valign="top">2007/08/15</TD>
+                  <TD>Ver4.3<BR>
+                  コメントなしpatiの際のメッセージ確認欄に「メッセージはありません」を表示しないようにしました。<BR>
+                  また、サブ項目にクッキーが利用できるようになりました。<BR>
+                  Ver4.xをご利用の方はindex.cgi、preset.cgi、また各デザインファイルを差し替えてご利用ください。<BR>
+                  （クッキーを利用しない場合はデザインファイルは差し替えなくても問題ありません。）</TD>
+                </TR>
+                <TR>
+                  <TD valign="top">2007/05/31</TD>
+                  <TD valign="top">Ver4.2<BR>
+                  最大保存ログ数が無効になってしまうバグ修正。Ver4.xをご利用の方はsub.plを差し替えるだけでOKです。</TD>
+                </TR>
+                <TR>
+                  <TD valign="top">2007/03/12</TD>
+                  <TD>Ver4.1<BR>
+                  ビュー画面の初期表示を月表示にした場合、日表示が見られないバグ修正。<BR>
+                  Ver4.0をお使いの方はview.cgiとsub.plを差し替えてご利用ください。</TD>
+                </TR>
+                <TR>
+                  <TD valign="top">2007/02/28</TD>
+                  <TD>Ver4.0<BR>
+                  ビュー画面の初期表示を月表示/日表示の選択（初期設定で）<BR>
+                  拍手のなかった日は空ログ生成しないように修正。<BR>
+                  ログファイル拡張子を自由に変更できるように修正。（デフォルトを.cgiにしました。）<BR>
+                  Ver3.xをお使いの方はindex.cgi、preset.cgi、view.cgi、sub.cgi
+                  を差し替えてください。<BR>
+                  ログファイルを継続利用したい場合、現行ログファイルの拡張子を変更するか、preset.cgiのログファイル拡張子をご変更ください。<BR>
+                  半角文字の文字化けをとっくに修正していたのですが書き忘れていました。多分Ver3.1あたりから直っています。</TD>
+                </TR>
+                <tr>
+            <td valign="top">2006/11/18</td>
+            <td>Ver3.2<br>
+    管理画面ログアウト機能追加。view.cgi、index.cgiを差し替えてご利用ください。</td>
+          </tr>
+          <tr>
+          <tr>
+            <td valign="top">2006/11/02</td>
+            <td>Ver3.1<br>
+              niftyなどのサーバー用モード、$shell_use = 1; に設定した時のビュー画面のバグ修正。<br>
+    NGワード送信後のメッセージ見せかけ機能実装。<br>
+                  NGワードの日本語のNGワードは送られてしまうバグ修正。</td>
+          </tr>
+          <tr>
+            <td valign="top">2006/01/23</td>
+            <td>Ver3.0<br>
+              文字化けを防ぐためにスクリプト本体をEUCコードに変更。前バージョンまでのログファイルは流用できません。<br>              
+              （半角カナ文字＋半角英数字のみのメッセージ（例：ﾊﾝｶｸﾓｼﾞAB69）は今のところ文字化けします。）<br>
+              （デザインファイルはSJISのままなのでlast.html以外は流用可能です。）              <br>
+              月ビュー画面のグラフ化・ビュー画面をフレームにして見やすくなるよう改良しました。              <br>    
+ 月ビューから日ビューへのリンクを作成しました。<br> 
+ ブラックリスト入りしたコメントを非表示に。白文字での表示なので、反転でコメントを見ることもできます。<br>
+ 連続拍手後の制限時間を設定できるようになりました。（クッキー制御）</td>
+          </tr>
+        		<tr>
+            		<td valign="top">2005/03/10</td>
+            		<td>Ver2.1<br>
+				初期設定で設定された連続拍手数や文字制限数をお礼ページに反映できるようにしました。</td>
+   				</tr>
+          <tr>
+            <td valign="top">2005/03/07</td>
+            <td>Ver2.0<br>
+    ブラックリスト機能のIP表示を暗号化。生IPは直接ファイルを開かないと見ることができないように変更しました。</td>
+          </tr>
+        		<tr>
+            		<td valign="top">2005/02/28</td>
+            		<td>Ver1.6<br>
+				ファイルロックをflock関数に変更。</td>
+   				</tr>
+          <tr>
+            <td valign="top">2005/02/02</td>
+            <td>Ver 1.5<br>
+            複数管理人へメールが送られるようになりました。<br>
+            ビュー画面をワンクリックで他の日を見れるように設定・月ビュー表示追加。<br>
+            Ver 1.3以上をお使いの方はログファイルなどははそのままお使い頂けます。</td>
+          </tr>
+          <tr>
+            <td valign="top">2004/12/21</td>
+            <td>Ver 1.4<br>
+            連続拍手回数以上の表示を固定デザインファイルに変更。<br>
+            また、密かにブラックリスト表示ページでリスト解除ができなかったバグ修正。<br>
+            view.cgiのシェル呼び出し禁止サーバー（niftyさんなど）対応。過去ログファイルが見れない方は、初期設定で $shell_use
+            = 1; にしてみてください。	ただし、このモードは過去ログがうまく削除できないかも知れません。（ある程度は削除できますが、途中で保存ログ数を変更などした時には、過去ログを手動で削除願います。通常に設置しているぶんには自動削除できるはずです。）<br>
+            Ver1.3以上をお使いの方は、ログファイルはそのままお使い頂けます。各CGIファイルとlast.htmlファイルを差し替えてお使いください。</td>
+          </tr>
+          <tr>
+            <td valign="top">2004/12/07</td>
+            <td>Ver 1.3<br>
+            IP表示はどうも評判が悪いようなので、ブラックリスト機能に変更。</td>
+          </tr>
+          <tr>
+            <td valign="top">2004/12/07</td>
+            <td>Ver 1.2<br>
+            管理者画面でコメントに対するIP表示をするかしないかの設定を追加。<br>
+            メッセージ受信時に改行がされないバグ修正。<br>
+            拍手設定数以上に拍手できてしまうバグ修正。</td>
+          </tr>
+          <tr>
+            <td valign="top">2004/09/28</td>
+            <td>Ver 1.1<br>
+            お礼ページ表示方法に「ランダムにせずに、さらに繰り返し表示もしない」モードを追加<br>
+            コメント以外にもフォームを反映できるようになりました。詳しくは下記の「フォームの追加方法」をご覧下さい。</td>
+          </tr>
+          <tr>
+            <td valign="top">2004/07/30</td>
+            <td>配布開始<br>
+            いわゆるweb拍手と似たようなモノです。コメントのメール送信機能付。</td>
+          </tr>
+        </table>
+    </td>
+  </tr>
+</table>
+<br>
+<table cellspacing=1 cellpadding=4 border=0 width="750" bgcolor="#3366CC">
+  <tr>
+    <td valign="top" bgcolor="#F3FBFC">システム仕様＆注意事項：<br>
+        <table border="0" cellspacing="0" cellpadding="5">
+          <tr>
+            <td>PatiPatiシステムのログ取得は、その日最初の拍手があった時、もしくは管理画面が表示された時に行われます。<br>
+              ですので、拍手がなく、かつ管理画面も呼び出されなかった日はログファイルが生成されません。<br>
+            日にちごとにログファイルを生成しているのでこのような仕様になっております。 </td>
+          </tr>
+      </table>
+</td>
+  </tr>
+</table>
+<br>
+<table cellspacing=0 cellpadding=4 border=0 width="750">
+  <tr> 
+    <td valign="top" bgcolor="#ffcc00">各ファイルならびにフォルダと<font color="#ff0033">[パーミッション]</font></td>
+  </tr>
+  <tr> 
+    <td valign="top" bgcolor="#fff8cf"> 
+      <pre>readme.html（説明ファイル＝このファイルです）<br>test.html（ファーストページへの設置サンプルです）<br>patipati（フォルダ）<br>  ├─img（フォルダ）<br>  ├─lock（フォルダ） [777] （初回動作時に自動生成）
+  │  <br>  ├─log（フォルダ） [777]（初回動作時に自動生成）<br>  │   └─blist.txt [666]（初回動作時に自動生成）
+  │   └─index.html （初回動作時に自動生成）<br>  │ 
+  ├─index.cgi [755]<br>  ├─preset.cgi [755]<br>  ├─view.cgi [755]
+  ├─view2.cgi [755]（過去互換用。.logタイプのログファイルを表示できます。新規設置の際は不要です。）<br>  ├─style.css<br>  ├─error.html<br>  ├─last.html<br>  ├─thanks.html<br>  ├─thanks2.html
+  ├─index.html （ダミーファイル）<br>  ├─jcode.pl<br>  └─sub.pl<br>index.cgiにアクセスすることでプログラムが機能します。解析画面はview.cgiにアクセスしてご覧ください。
+既にver3以降のPatiPati導入済みの方はview2.cgiで旧形式ログの解析が可能です。<br>パーミッションの指定のないものはデフォルトのまま（644）で構いません。</pre>
+      </td>
+  </tr>
+</table>
+<br>
+<table cellspacing=0 cellpadding=4 border=0 width="750">
+  <tr> 
+    <td valign="top" bgcolor="#ffcc00">cgiの設定</td>
+  </tr>
+  <tr> 
+    <td valign="top" bgcolor="#fff8cf"> 
+      <pre>index.cgi, view.cgiをメモ帳などで開き、1行目を変更します。
+ #!/usr/bin/perl    </pre>
+      <small>サーバで定められたパールへのパス</small>
+      <PRE>
+preset.cgiをメモ帳などで開き、各初期設定を変更します。<br> （設定の仕方はpreset.cgi内のコメントを参照してください。）
+
+設定変更後は必ず文字コードEUCで保存してください。→EUC形式保存可能エディタ<A href="http://www5f.biglobe.ne.jp/~t-susumu/" target="_blank">■</A> <A href="http://www.vector.co.jp/soft/win95/writing/se083554.html" target="_blank">■</A></PRE>
+      </td>
+  </tr>
+</table>
+<br>
+<table cellspacing=0 cellpadding=4 border=0 width="750">
+  <tr> 
+    <td valign="top" bgcolor="#ffcc00">お礼画面htmlの設定</td>
+  </tr>
+  <tr> 
+    <td valign="top" bgcolor="#fff8cf"> <font color="#3333CC">thanks.html</font>など、お礼画面を作成し、初期設定ファイルでお礼ファイル名を設定します。
+      <hr size="1">
+    お礼画面を作成する際、&lt;!-- --&gt; で囲まれた部分はソースから削除しないようにお願いします。<BR><BR>
+	thanks.html＝スリム表示、thanks2.html＝入力フォーム大きめ<BR>
+	thanks3.html＝画像貼り付け例、thanks4.html＝拍手音再生例となっております。<BR>
+</td>
+  </tr>
+</table>
+<br>
+<table cellspacing=0 cellpadding=4 border=0 width="750">
+		<tr>
+					<td valign="top" bgcolor="#ffcc00">フォームの追加方法</td>
+		</tr>
+		<tr>
+		  <td valign="top" bgcolor="#fff8cf"> <font color="#3333CC">thanks.html</font>などの作成したお礼画面のフォーム内に、ラジオボタンやチェックボックスを作成します。						<br>
+						その時、フォームオブジェクトの名前を、必ず「<font color="#FF0000"><strong>sub○</strong></font>」（○は1以上の任意の整数）として<strong>半角で</strong>ご指定ください。<br>
+preset.cgiで追加ボックスをいくつまで作るか設定できます。<br>
+（初期設定は5つです。厳密に数を合わせることは必要ありませんが、ここで設定した以上の数のオブジェクトは反映されません）<br>
+（例） sub1～sub8まで使用したい場合は、$sub_su の設定を8以上にしてください。（あまり大きくしすぎるとサーバ負荷の原因となります。）<br>
+解析画面では、コメント後に（ ）で囲まれてvalue値のみが表示されます。<br>
+					なお、追加ボックスは改行が反映されません。
+                    <br>
+                    <strong></strong>                    <table border="0" cellspacing="1" cellpadding="4">
+					  <tr bgcolor="#FFFFCC">
+					    <td colspan="2" valign="top" class="box"><strong><font color="#006699">＜追加項目設定例（ソースコード）＞ </font></strong></td>
+				      </tr>
+					  <tr>
+					    <td valign="top" nowrap bgcolor="#FFFFE6" class="box"><strong>1)</strong></td>
+					    <td valign="top" bgcolor="#FFFFFF" class="box"><strong>「名前」入力欄を追加したい</strong><br>
+					      <font color="#006699">お名前：&lt;input name=&quot;sub1&quot; type=&quot;text&quot; id=&quot;sub1&quot; size=&quot;15&quot;&gt;</font><br>
+					      　→お名前：
+                          <input name="sub1" type="text" id="sub122" size="15">
+</td>
+			          </tr>
+					  <tr>
+					    <td valign="top" nowrap bgcolor="#FFFFE6" class="box"><strong>2)</strong></td>
+					    <td valign="top" bgcolor="#FFFFFF" class="box"><strong>「返信要・不要」など、ラジオボタンを追加したい </strong><br>
+					      <font color="#006699">&lt;input type=&quot;radio&quot; name=&quot;sub1&quot; value=&quot;要&quot;&gt;要　&lt;input
+				      type=                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       &quot;radio&quot; name=&quot;sub1&quot; value=&quot;不要&quot;&gt;不要</font><br>
+　→
+<input type="radio" name="sub1" value="要">
+要　
+<input
+				      type="radio" name="sub1" value="不要">
+不要</td>
+			          </tr>
+					  <tr>
+					    <td valign="top" nowrap bgcolor="#FFFFE6" class="box"><strong>3)</strong></td>
+					    <td valign="top" bgcolor="#FFFFFF" class="box"><strong>「返信不要」のチェックボックスを追加したい</strong><br>
+					      <font color="#006699">&lt;input name=&quot;sub1&quot; type=&quot;checkbox&quot; id=&quot;sub1&quot; value=&quot;返信不要&quot;&gt;返信不要</font><br>
+　→
+<input name="sub1" type="checkbox" id="sub1" value="返信不要">
+返信不要 </td>
+				      </tr>
+					  <tr>
+                        <td valign="top" nowrap bgcolor="#FFFFE6" class="box"><strong>4)</strong></td>
+                        <td valign="top" bgcolor="#FFFFFF" class="box"><strong>簡易アンケートを追加したい</strong> <br>
+                            <font color="#006699">このサイトで好きなものは？：<br>
+&lt; select name=&quot;sub1&quot; id=&quot;sub1&quot;&gt;<br>
+&lt; option&gt;テキスト&lt;/option&gt;&lt;option&gt;コミック&lt;/option&gt;&lt;option&gt;日記&lt;/option&gt;&lt;option&gt;エッセイ&lt;/option&gt;<br>
+&lt;/select&gt;<br>
+                            </font> 　→このサイトで好きなものは？：
+                            <select name="sub1" id="select3">
+                              <option>テキスト</option>
+                              <option>コミック</option>
+                              <option>日記</option>
+                              <option>エッセイ</option>
+                            </select>
+                        </td>
+				      </tr>
+					  <tr>
+					    <td valign="top" nowrap bgcolor="#FFFFE6" class="box"><strong>5)</strong></td>
+					    <td valign="top" bgcolor="#FFFFFF" class="box"><strong>画面には表示させずに、隠し項目を追加したい</strong><br>
+					      <font color="#006699">&lt;input type=&quot;hidden&quot; name=&quot;sub1&quot; value=&quot;ページ1からの拍手&quot;&gt;</font><br>
+　→<input type="hidden" name="sub1" value="ページ1からの拍手">
+　<font color="#999999">（表示されません）</font></td>
+				      </tr>
+		    </table></td>
+		</tr>
+		<tr>
+          <td valign="top" bgcolor="#ffcc00">フォームのクッキー対応方法</td>
+  </tr>
+		<tr>
+          <td valign="top" bgcolor="#fff8cf"> <font color="#3333CC">thanks.html</font>などの作成したお礼画面のフォーム内のサブ項目にクッキーを対応させることができます。<br>
+    value値に「&lt;!--フォーム名--&gt;」を書くことで、クッキーを読み出すことができます。<br>
+    下記に例を示しますので、ご参考ください。<br>
+    また、ラジオボタンやチェックボックス、セレクトボックスなどは基本的にクッキー対応できません。<br>
+    <strong></strong>
+    <table border="0" cellspacing="1" cellpadding="4">
+      <tr bgcolor="#FFFFCC">
+        <td colspan="2" valign="top" class="box"><strong><font color="#006699">＜項目設定例（ソースコード）＞ </font></strong></td>
+      </tr>
+      <tr>
+        <td valign="top" nowrap bgcolor="#FFFFE6" class="box"><strong>1)</strong></td>
+        <td valign="top" bgcolor="#FFFFFF" class="box"><strong>「名前」入力欄をsub1で設定し、クッキー対応させたい</strong><br>
+            <font color="#006699">お名前：&lt;input name=&quot;sub1&quot; type=&quot;text&quot; id=&quot;sub1&quot; size=&quot;15&quot; value=&quot;&lt;!--sub1--&gt;&quot;&gt;</font>        </td>
+      </tr>
+    </table>
+          </td>
+  </tr>
+</table>
+<br>
+      </TABLE></BODY></HTML>
