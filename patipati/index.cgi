@@ -1,11 +1,13 @@
+#!"C:\xampp\perl\bin\perl.exe"
+# TODO: パス変える
 #!/usr/bin/perl
 
 #=======================================================================================
 #				 PatiPati System                                                   Script by HAL
 #                                                                 Last Update 2007.3.10(Towa)
 #=======================================================================================
-require 'preset.cgi';
-require 'sub.pl';
+require './preset.cgi';
+require './sub.pl';
 require $jcode;
 $cookie_name = 'patipati';
 
