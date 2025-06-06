@@ -1,5 +1,5 @@
 #!"C:\xampp\perl\bin\perl.exe"
-# TODO: ¥Ñ¥¹ÊÑ¤¨¤ë
+# TODO: ãƒ‘ã‚¹å¤‰ãˆã‚‹
 #!/usr/bin/perl
 
 #=======================================================================================
@@ -27,10 +27,10 @@ foreach $pair (@pairs) {
 	$QUERY{$name} = $value;
 }
 
-#================================¥á¥¤¥ó½èÍı=================================
+#================================ãƒ¡ã‚¤ãƒ³å‡¦ç†=================================
 	&get_cookie;
 	&Setdirectory;
-	if(!(-e $ip_ck_file)){ # ¥Ö¥é¥Ã¥¯¥ê¥¹¥Æ¥£¥ó¥°¥Õ¥¡¥¤¥ë¤¬¤Ê¤¤¾ì¹ç¤ÏÀ¸À®
+	if(!(-e $ip_ck_file)){ # ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒ†ã‚£ãƒ³ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ãŒãªã„å ´åˆã¯ç”Ÿæˆ
 				open(OUT,">$ip_ck_file");
 				print OUT "";
 				close(OUT);
@@ -38,14 +38,14 @@ foreach $pair (@pairs) {
 
 			}
 
-	if(!(-e $Gindex)){ # index.html¤¬¤Ê¤¤¾ì¹ç¤ÏÀ¸À®
+	if(!(-e $Gindex)){ # index.htmlãŒãªã„å ´åˆã¯ç”Ÿæˆ
 				open(OUT,">$Gindex") || &error('FILE OPEN ERROR - log');
 				print OUT "<Content-type: text/html>";
 				close(OUT);
 
 			}
 	if($COOKIE{'f'} == 1){
-		open(HTML,"$last_file") || die "¥Õ¥¡¥¤¥ë¥ª¡¼¥×¥ó¤Ë¼ºÇÔ¤·¤Ş¤·¤¿ - design";
+		open(HTML,"$last_file") || die "ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸ - design";
 		@htmls = <HTML>;
 		close(HTML);
 	}else{
@@ -53,7 +53,7 @@ foreach $pair (@pairs) {
 		$QUERY{'pkai'}++;
 		$hidden = "<input type=\"hidden\" name=\"pkai\" value=\"$QUERY{'pkai'}\">";
 		$gn = &get_date($time_w);
-		# ²áµî¥Ç¡¼¥¿¾Ãµî
+		# éå»ãƒ‡ãƒ¼ã‚¿æ¶ˆå»
 			&del_logs;
 		$gn = &get_date($time_w);
 		$user_ipg = $ENV{'REMOTE_ADDR'};
@@ -66,7 +66,7 @@ foreach $pair (@pairs) {
 				$crypt_ip .= crypt(substr($user_ipg,$keta,8),$salt);
 				$i++;
 			}
-		# ¥Ö¥é¥Ã¥¯¥ê¥¹¥È½èÍı
+		# ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆå‡¦ç†
 			$bk_ck = 0;
 			if($ip_ck == 1){
 				open(BLT,"$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
@@ -74,13 +74,13 @@ foreach $pair (@pairs) {
 				close(BLT);
 			}
 
-			#URL¥¹¥Ñ¥àÂĞºö¹Ô
+			#URLã‚¹ãƒ‘ãƒ å¯¾ç­–è¡Œ
 			if($kickurl eq 1) {
-			if($QUERY{'com'} =~ "http") {&error('URL¤ÎÆş¤Ã¤¿Ê¸¾Ï¤Ï¥¹¥Ñ¥àÂĞºö¤Î¤¿¤á¤½¤Î¤Ş¤Ş¤Ç¤ÏÁ÷¿®¤Ç¤­¤Ş¤»¤ó¡£<br>Æ¬¤Î£è¤òÈ´¤¯¤Ê¤É¤·¤ÆÁ÷¿®¤·¤Æ¤¯¤À¤µ¤¤¡£'); }
+			if($QUERY{'com'} =~ "http") {&error('URLã®å…¥ã£ãŸæ–‡ç« ã¯ã‚¹ãƒ‘ãƒ å¯¾ç­–ã®ãŸã‚ãã®ã¾ã¾ã§ã¯é€ä¿¡ã§ãã¾ã›ã‚“ã€‚<br>é ­ã®ï½ˆã‚’æŠœããªã©ã—ã¦é€ä¿¡ã—ã¦ãã ã•ã„ã€‚'); }
 			}
-			#±Ñ¿ôÈ¾³ÑÂĞºö
+			#è‹±æ•°åŠè§’å¯¾ç­–
 			if($delspam ne "0") {
-			if(($QUERY{'com'} ne "") && ($QUERY{'com'} !~ m/[\x80-\xff]/)) {&error('±Ñ¿ôÈ¾³Ñ¤Î¤ß¤ÎÅê¹Æ¤Ï¥¹¥Ñ¥àËÉ»ß¤Î¤¿¤áÁ÷¿®¤Ç¤­¤Ş¤»¤ó'); }
+			if(($QUERY{'com'} ne "") && ($QUERY{'com'} !~ m/[\x80-\xff]/)) {&error('è‹±æ•°åŠè§’ã®ã¿ã®æŠ•ç¨¿ã¯ã‚¹ãƒ‘ãƒ é˜²æ­¢ã®ãŸã‚é€ä¿¡ã§ãã¾ã›ã‚“'); }
 			}
 
 			foreach $bk(@blists){
@@ -97,7 +97,7 @@ foreach $pair (@pairs) {
 					$QUERY{$wk} =~ s/\r\n//g;
 					$QUERY{$wk} =~ s/\r//g;
 					$QUERY{$wk} =~ s/\n//g;
-					$QUERY{'com'} .= "¡Ê$QUERY{$wk}¡Ë";
+                                $log_file = $log_dir .$gw .'.' .$kakucho;
 				}
 				$i++;
 			}
@@ -106,9 +106,9 @@ foreach $pair (@pairs) {
 			$msg = $QUERY{'com'};
 			$msgw = $msg;
 			$msgw =~ tr/A-Z/a-z/;
-			if($com_jisu != 0 && $com_jisu < length($msg)){ &error("Á÷¿®¤Ç¤­¤ë¥á¥Ã¥»¡¼¥¸¤ÏÈ¾³Ñ$com_jisuÊ¸»ú¡ÊÁ´³Ñ¤Î¾ì¹ç¤½¤ÎÈ¾Ê¬¡Ë¤Ş¤Ç¤Ç¤¹¡£"); }
+			if($com_jisu != 0 && $com_jisu < length($msg)){ &error("é€ä¿¡ã§ãã‚‹ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã¯åŠè§’$com_jisuæ–‡å­—ï¼ˆå…¨è§’ã®å ´åˆãã®åŠåˆ†ï¼‰ã¾ã§ã§ã™ã€‚"); }
 			if($delspam ne "1") {
-			if(($msg ne "") && ($msg !~ m/[\x80-\xff]/)) {&error('±Ñ¿ôÈ¾³Ñ¤Î¤ß¤ÎÅê¹Æ¤Ï¥¹¥Ñ¥àËÉ»ß¤Î¤¿¤áÁ÷¿®¤Ç¤­¤Ş¤»¤ó'); }
+			if(($msg ne "") && ($msg !~ m/[\x80-\xff]/)) {&error('è‹±æ•°åŠè§’ã®ã¿ã®æŠ•ç¨¿ã¯ã‚¹ãƒ‘ãƒ é˜²æ­¢ã®ãŸã‚é€ä¿¡ã§ãã¾ã›ã‚“'); }
 			}
 
 			$ng_ck = 0;
@@ -122,11 +122,11 @@ foreach $pair (@pairs) {
 			if($ng_ck == 1 && $ng_ck_msg ne ""){ &error($ng_ck_msg); }
 			elsif($ng_ck == 0){
 				$QUERY{'com'} =~ s/\n/<br>/g;
-				$log_file = $log_dir .$gw .'.cgi'; # ¥í¥°¥Õ¥¡¥¤¥ë
-				# ¥í¥Ã¥¯³«»Ï
+				$log_file = $log_dir .$gw .'.cgi'; # ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«
+				# ãƒ­ãƒƒã‚¯é–‹å§‹
 					if ($lockkey == 1) { &lock1; }
 					elsif ($lockkey == 2) { &lock2; }
-				if(!(-e $log_file)){ # ¥í¥°¥Õ¥¡¥¤¥ë¤¬¤Ê¤¤¾ì¹ç¤ÏÀ¸À®
+				if(!(-e $log_file)){ # ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ãŒãªã„å ´åˆã¯ç”Ÿæˆ
 					open(OUT,">$log_file") || &error('FILE OPEN ERROR - log');
 					print OUT "";
 					close(OUT);
@@ -162,16 +162,16 @@ foreach $pair (@pairs) {
 					close(OUT);
 				}
 
-			#URL¥¹¥Ñ¥àÂĞºö¹Ô
+			#URLã‚¹ãƒ‘ãƒ å¯¾ç­–è¡Œ
 			if($kickurl eq 1) {
-			if($QUERY{'com'} =~ "http") {&error('URL¤ÎÆş¤Ã¤¿Ê¸¾Ï¤Ï¥¹¥Ñ¥àÂĞºö¤Î¤¿¤á¤½¤Î¤Ş¤Ş¤Ç¤ÏÁ÷¿®¤Ç¤­¤Ş¤»¤ó¡£<br>Æ¬¤Î£è¤òÈ´¤¯¤Ê¤É¤·¤ÆÁ÷¿®¤·¤Æ¤¯¤À¤µ¤¤¡£'); }
+			if($QUERY{'com'} =~ "http") {&error('URLã®å…¥ã£ãŸæ–‡ç« ã¯ã‚¹ãƒ‘ãƒ å¯¾ç­–ã®ãŸã‚ãã®ã¾ã¾ã§ã¯é€ä¿¡ã§ãã¾ã›ã‚“ã€‚<br>é ­ã®ï½ˆã‚’æŠœããªã©ã—ã¦é€ä¿¡ã—ã¦ãã ã•ã„ã€‚'); }
 			}
-			#±Ñ¿ôÈ¾³ÑÂĞºö
+			#è‹±æ•°åŠè§’å¯¾ç­–
 			if($delspam ne "0") {
-			if(($QUERY{'com'} ne "") && ($QUERY{'com'} !~ m/[\x80-\xff]/)) {&error('±Ñ¿ôÈ¾³Ñ¤Î¤ß¤ÎÅê¹Æ¤Ï¥¹¥Ñ¥àËÉ»ß¤Î¤¿¤áÁ÷¿®¤Ç¤­¤Ş¤»¤ó'); }
+			if(($QUERY{'com'} ne "") && ($QUERY{'com'} !~ m/[\x80-\xff]/)) {&error('è‹±æ•°åŠè§’ã®ã¿ã®æŠ•ç¨¿ã¯ã‚¹ãƒ‘ãƒ é˜²æ­¢ã®ãŸã‚é€ä¿¡ã§ãã¾ã›ã‚“'); }
 			}
 
-				&unlock; # ¥í¥Ã¥¯²ò½ü
+				&unlock; # ãƒ­ãƒƒã‚¯è§£é™¤
 				if($msg ne "" && $mail_ck == 1){ &mail; }
 			}
 	  }
@@ -191,59 +191,59 @@ foreach $pair (@pairs) {
 		}
 		if($clap_su != 0 && $kaisu >= $clap_su){
 			&set_cookie();
-			open(HTML,"$last_file") || die "¥Õ¥¡¥¤¥ë¥ª¡¼¥×¥ó¤Ë¼ºÇÔ¤·¤Ş¤·¤¿ - design";
+			open(HTML,"$last_file") || die "ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸ - design";
 			@htmls = <HTML>;
 			close(HTML);
 		}else{
-			open(HTML,"$location_file") || die "¥Õ¥¡¥¤¥ë¥ª¡¼¥×¥ó¤Ë¼ºÇÔ¤·¤Ş¤·¤¿ - design";
+			open(HTML,"$location_file") || die "ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸ - design";
 			@htmls = <HTML>;
 			close(HTML);
 		}
 	}
 
-			#±Ñ¿ôÈ¾³ÑÂĞºö
+			#è‹±æ•°åŠè§’å¯¾ç­–
 			if($delspam ne "0") {
-			if(($msg ne "") && ($QUERY{'com'} !~ m/[\x80-\xff]/)) {&error('±Ñ¿ôÈ¾³Ñ¤Î¤ß¤ÎÅê¹Æ¤Ï¥¹¥Ñ¥àËÉ»ß¤Î¤¿¤áÁ÷¿®¤Ç¤­¤Ş¤»¤ó'); }
+			if(($msg ne "") && ($QUERY{'com'} !~ m/[\x80-\xff]/)) {&error('è‹±æ•°åŠè§’ã®ã¿ã®æŠ•ç¨¿ã¯ã‚¹ãƒ‘ãƒ é˜²æ­¢ã®ãŸã‚é€ä¿¡ã§ãã¾ã›ã‚“'); }
 			}
 
 
-			#URL¥¹¥Ñ¥àÂĞºö¹Ô
+			#URLã‚¹ãƒ‘ãƒ å¯¾ç­–è¡Œ
 			if($kickurl eq 1) {
-			if($msg =~ "http") {&error('URL¤ÎÆş¤Ã¤¿Ê¸¾Ï¤Ï¥¹¥Ñ¥àÂĞºö¤Î¤¿¤á¤½¤Î¤Ş¤Ş¤Ç¤ÏÁ÷¿®¤Ç¤­¤Ş¤»¤ó¡£<br>Æ¬¤Î£è¤òÈ´¤¯¤Ê¤É¤·¤ÆÁ÷¿®¤·¤Æ¤¯¤À¤µ¤¤¡£'); }
+			if($msg =~ "http") {&error('URLã®å…¥ã£ãŸæ–‡ç« ã¯ã‚¹ãƒ‘ãƒ å¯¾ç­–ã®ãŸã‚ãã®ã¾ã¾ã§ã¯é€ä¿¡ã§ãã¾ã›ã‚“ã€‚<br>é ­ã®ï½ˆã‚’æŠœããªã©ã—ã¦é€ä¿¡ã—ã¦ãã ã•ã„ã€‚'); }
 			};
 
 	if ($msg ne "") {
 		($msg_in = $msg);
 		&jcode'convert(*msg_in,'sjis');
-		($comment_over = "°Ê²¼¤Î¥á¥Ã¥»¡¼¥¸¤¬Á÷¿®¤µ¤ì¤Ş¤·¤¿¡£");
+		($comment_over = "ä»¥ä¸‹ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒé€ä¿¡ã•ã‚Œã¾ã—ãŸã€‚");
 		&jcode'convert(*comment_over,'sjis');
 	}
 	if ($clap_su eq "0") {
-		($clap_su_v = "À©¸ÂÌµ¤·");
-		($clap_su_v2 = "¤Ç");
+		($clap_su_v = "åˆ¶é™ç„¡ã—");
+		($clap_su_v2 = "ã§");
 		&jcode'convert(*clap_su_v,'sjis');
 		&jcode'convert(*clap_su_v2,'sjis');
 	}else{
 		($clap_su_v = $clap_su);
-		($clap_su_v2 = "²ó¤Ş¤Ç");
+		($clap_su_v2 = "å›ã¾ã§");
 		&jcode'convert(*clap_su_v2,'sjis');
 	}
 
 	if ($com_jisu eq "0") {
-		($moji_hmax_v = "ÌµÀ©¸Â");
-		($moji_hmax_v2 = "¤Ë");
-		($moji_zmax = "ÌµÀ©¸Â");
-		($moji_zmax_v2 = "¤Ë");
+		($moji_hmax_v = "ç„¡åˆ¶é™");
+		($moji_hmax_v2 = "ã«");
+		($moji_zmax = "ç„¡åˆ¶é™");
+		($moji_zmax_v2 = "ã«");
 		&jcode'convert(*moji_hmax_v,'sjis');
 		&jcode'convert(*moji_hmax_v2,'sjis');
 		&jcode'convert(*moji_zmax,'sjis');
 		&jcode'convert(*moji_zmax_v2,'sjis');
 	}else{
 		($moji_hmax_v = $com_jisu);
-		($moji_hmax_v2 = "Ê¸»ú");
+		($moji_hmax_v2 = "æ–‡å­—");
 		&jcode'convert(*moji_hmax_v2,'sjis');
 		($moji_zmax = int($com_jisu / 2));
-		($moji_zmax_v2 = "Ê¸»ú");
+		($moji_zmax_v2 = "æ–‡å­—");
 		&jcode'convert(*moji_zmax_v2,'sjis');
 	}
 
@@ -258,25 +258,25 @@ foreach $pair (@pairs) {
 	$html =~ s/<!--clap_kankaku-->/$clap_kankaku/g;
 	$html =~ s/<!--moji_hmax-->/$moji_hmax_v/g;
 	$html =~ s/<!--moji_hmax_v2-->/$moji_hmax_v2/g;
-		#$moji_zmax = int($com_jisu / 2) ; ¥ª¥ê¥¸¥Ê¥ë¤Î½èÍı
+		#$moji_zmax = int($com_jisu / 2) ; ã‚ªãƒªã‚¸ãƒŠãƒ«ã®å‡¦ç†
 	$html =~ s/<!--moji_zmax-->/$moji_zmax/g;
 	$html =~ s/<!--moji_zmax_v2-->/$moji_zmax_v2/g;
 	$html =~ s/<!--system-->/$systeminfo/g;
 	print "Content-Type: text/html; charset=Shift_JIS\n\n";
-		#print "Content-Type: text/html;charset=EUC-JP\n\n"; ¥ª¥ê¥¸¥Ê¥ë¤Î½èÍı
+		#print "Content-Type: text/html;charset=EUC-JP\n\n"; ã‚ªãƒªã‚¸ãƒŠãƒ«ã®å‡¦ç†
 	print "<!DOCTYPE HTML PUBLIC -//IETF//DTD HTML//EN>\n";
 	print $html;
 	exit;
 
 
-#================================¥á¡¼¥ëÅ¾Á÷½èÍı=================================
+#================================ãƒ¡ãƒ¼ãƒ«è»¢é€å‡¦ç†=================================
 sub mail{
 	&jcode'convert(*subject,'jis');
 	&jcode'convert(*msg,'jis');
 
 	foreach $mlw (@mailtos){
 		$mailtow = $mlw;
-		if (!open(MAIL,"| $sendmail $mailtow")) { &error('²¿¤é¤«¤Î¸¶°ø¤ÇÁ÷¿®¤Ç¤­¤Ş¤»¤ó¤Ç¤·¤¿¡£'); }
+		if (!open(MAIL,"| $sendmail $mailtow")) { &error('ä½•ã‚‰ã‹ã®åŸå› ã§é€ä¿¡ã§ãã¾ã›ã‚“ã§ã—ãŸã€‚'); }
 			print MAIL "X-Mailer: GNBSys\n";
 			print MAIL "To: $mailtow\n";
 			print MAIL "From: $mailtow\n";
@@ -288,7 +288,7 @@ sub mail{
 	}
 }
 
-#===============================¥¯¥Ã¥­¡¼¤Î¼èÆÀ===========================
+#===============================ã‚¯ãƒƒã‚­ãƒ¼ã®å–å¾—===========================
 sub get_cookie{
 	@pairs = split(/\;/, $ENV{'HTTP_COOKIE'});
 	foreach $pair (@pairs) {
@@ -303,7 +303,7 @@ sub get_cookie{
 	}
 }
 
-#===============================¥¯¥Ã¥­¡¼¤ÎÈ¯¹Ô(60Æü´ÖÍ­¸ú)===========================
+#===============================ã‚¯ãƒƒã‚­ãƒ¼ã®ç™ºè¡Œ(60æ—¥é–“æœ‰åŠ¹)===========================
 sub set_cookie{
 	($secg,$ming,$hourg,$mdayg,$mong,$yearg,$wdayg,$dmy,$dmy)
 					 	= gmtime(time + 60*60*$clap_kankaku);
@@ -320,7 +320,7 @@ sub set_cookie{
 	print "Set-Cookie: $cookie_name=$cook; expires=\"$date_gmt\"\n";
 }
 
-#---------------------------------¥Ç¥£¥ì¥¯¥È¥êºîÀ®½èÍı--------------------------
+#---------------------------------ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆå‡¦ç†--------------------------
 sub Setdirectory{
 	$LockDirc = "lock";
 	( mkdir $log_dir );
