@@ -8,3 +8,8 @@ Perl のアップデートで動かなくなった patipati をひとまず動�
 
 - `jcode.pl` から `jacode.pl` に変更
 - モジュールの呼び出し方を変更
+
+## Testing
+
+Run the test suite with: `prove -l`
+
