@@ -1,11 +1,47 @@
+#!/usr/bin/perl
+use utf8;
+use Encode qw/decode encode/;
+use Encode::Guess qw/shift_jis euc-jp utf8/;
 #=======================================================================================
-# ¶¦ÄÌ¥µ¥Ö¥ë¡¼¥Á¥ó
+# å…±é€šã‚µãƒ–ãƒ«ãƒ¼ãƒãƒ³
 #=======================================================================================
 $systeminfo = '<a href="http://www.gnbnet.com/" target="_blank">PatiPati (Ver 4.3)</a> + <a href="http://www3.to/gift/" target="_blank">Towa </a>';
 $systeminfo2 = '<a href="http://www.gnbnet.com/" target="_blank">PatiPati (Ver 4.3)</a> + <a href="http://www3.to/gift/" target="_blank">Towa </a>';
 $salt = 'pt';
 
-#======================================»ş´Ö¼èÆÀ¥ë¡¼¥Á¥ó=================================
+#======================================ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°è‡ªå‹•æ¤œå‡ºã§ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€=================================
+sub read_file_auto_encoding {
+	my ($filename) = @_;
+	my @lines;
+
+	# ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒã‚¤ãƒŠãƒªãƒ¢ãƒ¼ãƒ‰ã§èª­ã¿è¾¼ã¿
+	open(my $fh, '<', $filename) or return ();
+	binmode($fh);
+	my $content = do { local $/; <$fh> };
+	close($fh);
+
+	# ç©ºãƒ•ã‚¡ã‚¤ãƒ«ã®å ´åˆ
+	return () if length($content) == 0;
+
+	# ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã‚’æ¨æ¸¬
+	my $enc = guess_encoding($content, qw/utf8 shiftjis euc-jp/);
+
+	if (ref($enc)) {
+		# æ¨æ¸¬æˆåŠŸï¼šãƒ‡ã‚³ãƒ¼ãƒ‰ã—ã¦è¿”ã™
+		my $decoded = $enc->decode($content);
+		@lines = split(/\n/, $decoded);
+		# è¡Œæœ«ã®æ”¹è¡Œã‚’å¾©å…ƒ
+		@lines = map { $_ . "\n" } @lines;
+	} else {
+		# æ¨æ¸¬å¤±æ•—ï¼šUTF-8ã¨ã—ã¦èª­ã¿è¾¼ã‚€
+		@lines = split(/\n/, decode('utf8', $content));
+		@lines = map { $_ . "\n" } @lines;
+	}
+
+	return @lines;
+}
+
+#======================================æ—¥æ™‚å–å¾—ãƒ«ãƒ¼ãƒãƒ³=================================
 sub get_date{
 	$timew = $_[0];
 	$ENV{'TZ'} = "JST-9";
@@ -14,34 +50,34 @@ sub get_date{
 	$tsuki = sprintf("%02d",$date[4] + 1);
 	$hi = sprintf("%02d",$date[3]);
 	$jikan = sprintf("%02d",$date[2]);
-	$youbi = ('Æü','·î','²Ğ','¿å','ÌÚ','¶â','ÅÚ') [$date[6]];
+	$youbi = ('æ—¥','æœˆ','ç«','æ°´','æœ¨','é‡‘','åœŸ') [$date[6]];
 	$gw = $nen .$tsuki .$hi;
 	return $gw;
 }
 
-#======================================¥í¥Ã¥¯½èÍı¥ë¡¼¥Á¥ó=================================
-sub lock1 { # flock´Ø¿ô
+#======================================ãƒ­ãƒƒã‚¯ç”¨ãƒ«ãƒ¼ãƒãƒ³=================================
+sub lock1 { # flocké–¢æ•°
  	eval { flock( LOCKCHK, 8 ) ; } ;
 	if ( ! $@ ){
 		open(LOCK,">$lock_file") or die "Can't open lockfile: $!";
 	  flock(LOCK, 2) or die "Can't flock        : $!";
 	}else{
-		&error('¤³¤Î¥µ¡¼¥Ğ¡¼¤Ç¤Ïflock´Ø¿ô¤Ï»È¤¨¤Ê¤¤¤è¤¦¤Ç¤¹¡£');
+		&error('ã“ã®ã‚µãƒ¼ãƒãƒ¼ã§ã¯flocké–¢æ•°ã¯ä½¿ãˆãªã„ã‚ˆã†ã§ã™ã€‚');
 	}
 }
 
-sub lock2 { # mkdir´Ø¿ô
-	$retry = 5; # ¥ê¥È¥é¥¤²ó¿ô¥»¥Ã¥È
+sub lock2 { # mkdiré–¢æ•°
+	$retry = 5; # ãƒªãƒˆãƒ©ã‚¤å›æ•°ã‚»ãƒƒãƒˆ
 	$lockdir = $lock_file;
 	$lockdir =~ s/\./_/g;
 	$lockdir2 =  'c_' .$lockdir;
 	while (!mkdir($lockdir, 0755)) {
 		if (--$retry <= 0) {
-			if (mkdir($lockdir2, 0755)) {          # ¥í¥Ã¥¯¤ò¾Ã¤¹¤¿¤á¤ÎÇÓÂ¾
-				if ((-M $lockdir) * 86400 > 600) { # ºîÀ®»ş´Ö¤¬10Ê¬°Ê¾åÁ°¤Ê¤é
-					rename($lockdir2, $lockdir) or die 'LOCK ERROR'; # ¥í¥Ã¥¯Æş¤ìÂØ¤¨
-					last;                          # °ìÏ¢¤Î½èÍı¤Ø
-				}else { rmdir($lockdir2); }         # ÉôÊ¬¥í¥Ã¥¯ºï½ü
+			if (mkdir($lockdir2, 0755)) {          # ãƒ­ãƒƒã‚¯æ›ã‹ã£ã¦ã„ã‚‹äººä»¥å¤–
+				if ((-M $lockdir) * 86400 > 600) { # æœ€çµ‚æ™‚é–“ãŒ10åˆ†ä»¥ä¸ŠçµŒéãªã‚‰
+					rename($lockdir2, $lockdir) or die 'LOCK ERROR'; # ãƒ­ãƒƒã‚¯ç„¡ç†çŸ¢ç†
+					last;                          # ç¹°ã‚Šè¿”ã—å‡¦ç†çµ‚äº†
+				}else { rmdir($lockdir2); }         # ååˆ†çµŒã£ã¦ãªã„
 			}
 			&error("BUSY");
 		}
@@ -49,7 +85,7 @@ sub lock2 { # mkdir´Ø¿ô
 	}
 }
 
-sub unlock { # ¥í¥Ã¥¯²ò½ü
+sub unlock { # ãƒ­ãƒƒã‚¯è§£é™¤
 	if ($lockkey == 1) { close(LOCK); }
 	elsif ($lockkey == 2) {
 		$lockdir = $lock_file;
@@ -58,7 +94,7 @@ sub unlock { # ¥í¥Ã¥¯²ò½ü
 	}
 }
 
-#================================²áµî¥Ç¡¼¥¿¾Ãµî½èÍı=================================
+#================================ãƒ­ã‚°å‰Šé™¤å‡¦ç†=================================
 sub del_logs{
 	$g_mon = $log_dir .'*.' .$kakucho;
 	$i = 0;
@@ -94,17 +130,17 @@ sub del_logs{
 	}
 }
 
-#================================¥¨¥é¡¼½èÍı=================================
+#================================ã‚¨ãƒ©ãƒ¼å‡¦ç†=================================
 sub error {
 	$error = $_[0];
-	if ($error eq "") { $error = '¸¶°øÉÔÌÀ¤Î¥¨¥é¡¼¤Ç½èÍı¤ò·ÑÂ³¤Ç¤­¤Ş¤»¤ó¡£'; }
-	&jcode'convert(*error,'sjis');
-	&unlock; # ¥í¥Ã¥¯²ò½ü
+	if ($error eq "") { $error = 'äºˆæœŸã—ãªã„ã‚¨ãƒ©ãƒ¼ã§å‡¦ç†ãŒç¶™ç¶šã§ãã¾ã›ã‚“ã€‚'; }
+	# UTF-8ã§å‡ºåŠ›ï¼ˆEncodeãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã¯ä¸è¦ã€binmodeè¨­å®šï¼‰
+	&unlock; # ãƒ­ãƒƒã‚¯è§£é™¤
 	open(HTML,"$error_file") || die "FILE OPEN ERROR - error";
 	@html = <HTML>;
 	close(HTML);
-	print "Content-Type: text/html\n\n";
-	print "<!DOCTYPE HTML PUBLIC -//IETF//DTD HTML//EN>\n";
+	print "Content-Type: text/html; charset=UTF-8\n\n";
+	print "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
 	foreach $line (@html) {
 		$line =~ s/<!--error-->/$error/g;
 		$line =~ s/<!--system-->/$systeminfo/g;

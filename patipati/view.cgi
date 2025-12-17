@@ -1,6 +1,7 @@
-#!"C:\xampp\perl\bin\perl.exe"
-# TODO: ¥Ñ¥¹ÊÑ¤¨¤ë
 #!/usr/bin/perl
+
+use utf8;
+use Encode qw/decode encode/;
 
 #=======================================================================================
 #				 PatiPati System                                                   Script by HAL
@@ -8,7 +9,6 @@
 #=======================================================================================
 require './preset.cgi';
 require './sub.pl';
-require $jcode;
 $cgi_file = 'view.cgi';
 $cookie_name = 'patipatiview';
 
@@ -27,14 +27,15 @@ foreach $pair (@pairs) {
 	$QUERY{$name} = $value;
 }
 
-# ¥¯¥Ã¥­¡¼µ¡Ç½¤Î¥Á¥§¥Ã¥¯
+# ã‚¯ãƒƒã‚­ãƒ¼èª­ã¿è¾¼ã¿ã®ãƒã‚§ãƒƒã‚¯
 &get_adcookie;
 $passw = $COOKIE{'pass'};
 
 if($QUERY{'passwd'} ne ""){ $passw = $QUERY{'passwd'}; }
 
 if($passw ne $admin_pass){
-	print "Content-Type: text/html\n\n";
+	binmode(STDOUT, ":utf8");
+	print "Content-Type: text/html; charset=UTF-8\n\n";
 	print "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
 	print <<"EOM";
 <html>
@@ -64,13 +65,14 @@ elsif($QUERY{'mode'} eq "blist"){ &blist; }
 elsif($QUERY{'mode'} eq 'logout') { &logout; }
 else{ &html; }
 
-#===============================É½¼¨HTML¥É¥­¥å¥á¥ó¥È¤òÀ¸À®===========================
+#===============================è¡¨ç¤ºHTMLãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆä½œæˆ===========================
 sub html {
-	# ²áµî¥Ç¡¼¥¿¾Ãµî
+	# å¤ã„ãƒ‡ãƒ¼ã‚¿å‰Šé™¤
 		&del_logs;
 
 
-	print "Content-Type: text/html\n\n";
+	binmode(STDOUT, ":utf8");
+	print "Content-Type: text/html; charset=UTF-8\n\n";
 	print "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
 	print <<"EOM";
 		<html>
@@ -87,10 +89,10 @@ EOM
 		exit;
 }
 
-#===============================É½¼¨HTML¥É¥­¥å¥á¥ó¥È¤òÀ¸À®===========================
+#===============================è¡¨ç¤ºHTMLãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆä½œæˆ===========================
 sub menu {
 	&log_shushu;
-	# ¥Ó¥å¡¼¥ê¥ó¥¯ºîÀ®
+	# ãƒ“ãƒ¥ãƒ¼ãƒªãƒ³ã‚¯ä½œæˆ
 		$vlink = ""; $mlink = ""; $last_m = "";
 		foreach (@wfilesw){
 			($yymmw,$dmy) = split(/\./,$_);
@@ -106,12 +108,13 @@ sub menu {
 			$last_m = substr($yymmw,0,4) .substr($yymmw,4,2);
 		}
 
-	print "Content-Type: text/html\n\n";
+	binmode(STDOUT, ":utf8");
+	print "Content-Type: text/html; charset=UTF-8\n\n";
 	print "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
 	print <<"EOM";
 		<html>
 		<head><title>PATIPATI LOG</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<style type="text/css">
 		<!--
 		body, tr, td { font-size: 10pt; }
@@ -121,43 +124,47 @@ sub menu {
 		A:link,A:active { color: #6699cc }
 		A:visited { color: #336699 }
 		A:hover { color: #999999 }
-		input,textarea,select {            /* ¥Õ¥©¡¼¥àÆâ¤ÎÀßÄê  */
-			font-size       :12px;             /* Ê¸»ú¥µ¥¤¥º  */
-			color           :#666666;          /*   Ê¸»ú¿§    */
-			background-color:#eeeeee;          /*   ÇØ·Ê¿§    */
-			border          :1 solid #999999; /* Àş¤ÎÂÀ¤µ¡¢¿§*/ 
+		input,textarea,select {            /* ãƒ•ã‚©ãƒ¼ãƒ éƒ¨å“  */
+			font-size       :12px;             /* æ–‡å­—ã‚µã‚¤ã‚º  */
+			color           :#666666;          /*   æ–‡å­—è‰²    */
+			background-color:#eeeeee;          /*   èƒŒæ™¯è‰²    */
+			border          :1 solid #999999; /* æ ç·šã‚¹ã‚¿ã‚¤ãƒ«*/
 		}
 		-->
 		</style>
 		<base target="patiview">
 		</head>
 		<body bgcolor="#ffffff" text="#666666">
-		<a href="$cgi_file?mode=logout" target=\"_top\">&gt;&gt;¥í¥°¥¢¥¦¥È</a><br><br>
-		<a href="$cgi_file?mode=blist">&gt;&gt;¥Ö¥é¥Ã¥¯¥ê¥¹¥È</a><br><br>
-		<b><font color="#990000">&lt;·î¥Ó¥å¡¼&gt;</font></b><br>$mlink<br>
-		<b><font color="#990000">&lt;Æü·×\É½\¼¨&gt;</font></b><br>
+		<a href="$cgi_file?mode=logout" target=\"_top\">&gt;&gt;ãƒ­ã‚°ã‚¢ã‚¦ãƒˆ</a><br><br>
+		<a href="$cgi_file?mode=blist">&gt;&gt;ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆ</a><br><br>
+		<b><font color="#990000">&lt;æœˆãƒ“ãƒ¥ãƒ¼&gt;</font></b><br>$mlink<br>
+		<b><font color="#990000">&lt;æ—¥åˆ¥è¡¨ç¤º&gt;</font></b><br>
 		$vlink
 		</body></html>
 EOM
 	exit;
 }
-#===============================É½¼¨HTML¥É¥­¥å¥á¥ó¥È¤òÀ¸À®===========================
+#===============================è¡¨ç¤ºHTMLãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆä½œæˆ===========================
 sub view {
 	if($hiritsu <= 0){ $hiritsu = 1; }
 	if($view_pre == 1 && $QUERY{'yymmdd'} eq "" && $QUERY{'yymm'} eq ""){ $QUERY{'yymm'} = $nen .$tsuki; }
 	elsif($QUERY{'yymmdd'} eq ""){ $QUERY{'yymmdd'} = $nen .$tsuki .$hi; }
 	$now_date = substr($QUERY{'yymmdd'},0,4) .'/' .substr($QUERY{'yymmdd'},4,2) .'/' .substr($QUERY{'yymmdd'},6,2);
-	$log_file = $log_dir .$QUERY{'yymmdd'} .'.cgi'; # ¥í¥°¥Õ¥¡¥¤¥ë
-	# ¥Ö¥é¥Ã¥¯¥ê¥¹¥È¥Õ¥¡¥¤¥ëÆÉ¤ß¹ş¤ß
-		open(BLT,"$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
-		@blists = <BLT>;
-		close(BLT);
-	# ¥Ç¡¼¥¿É½¼¨
-		if($QUERY{'yymm'} ne ""){ # ·î¥Ç¡¼¥¿É½¼¨
+	$log_file = $log_dir .$QUERY{'yymmdd'} .'.cgi'; # ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«
+	# ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
+		# ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°è‡ªå‹•æ¤œå‡ºã§èª­ã¿è¾¼ã¿
+		@blists = &read_file_auto_encoding($ip_ck_file);
+		if (@blists == 0 && -e $ip_ck_file) {
+			open(BLT,"<:utf8", "$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
+			@blists = <BLT>;
+			close(BLT);
+		}
+	# ãƒ‡ãƒ¼ã‚¿è¡¨ç¤º
+		if($QUERY{'yymm'} ne ""){ # æœˆãƒ‡ãƒ¼ã‚¿è¡¨ç¤º
 			&log_shushu;
 			$view_data = '
 				<table cellspacing=1 cellpadding=4 border=0 bgcolor="#666666">
-				<tr><td bgcolor="#eeeeee" align="middle" nowrap>ÆüÉÕ</td><td bgcolor="#eeeeee" align="middle" nowrap>Çï¼ê²ó¿ô</td><td bgcolor="#eeeeee" align="middle">¥³¥á¥ó¥È</td></tr>
+				<tr><td bgcolor="#eeeeee" align="middle" nowrap>æ—¥ä»˜</td><td bgcolor="#eeeeee" align="middle" nowrap>å›æ•°</td><td bgcolor="#eeeeee" align="middle">ã‚³ãƒ¡ãƒ³ãƒˆ</td></tr>
 			';
 			$gokei = 0; @wks = ();
 			foreach (@wfilesw){
@@ -167,12 +174,16 @@ sub view {
 					$now_date = substr($yymmw,0,4) .'/' .substr($yymmw,4,2);
 					$dw = substr($yymmw,6,2);
 					$ymd = $ymw .$dw;
-					$log_filew = $log_dir .$ymd .'.' .cgi; # ¥í¥°¥Õ¥¡¥¤¥ë
+					$log_filew = $log_dir .$ymd .'.' .cgi; # ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«
 					if(-e $log_filew){
 						$comm = ""; $shokei = 0;
-						open(LOG,"$log_filew") || &error('FILE OPEN ERROR - log');
-						@logs = <LOG>;
-						close(LOG);
+						# ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°è‡ªå‹•æ¤œå‡ºã§èª­ã¿è¾¼ã¿
+						@logs = &read_file_auto_encoding($log_filew);
+						if (@logs == 0 && -e $log_filew) {
+							open(LOG,"<:utf8", "$log_filew") || &error('FILE OPEN ERROR - log');
+							@logs = <LOG>;
+							close(LOG);
+						}
 						foreach (@logs) {
 							($jikanw,$user_ipw,$kaisuw,$comw) = split("<>",$_);
 							if($comw ne ""){
@@ -189,12 +200,12 @@ sub view {
 								foreach $cw (@coms){
 									if($cw ne ""){
 										if($ip_ck == 1){
-											$bw = "<a href=\"$cgi_file?mode=bin&day=$ymd&ip=$user_ipc\">¥Ö¥é¥Ã¥¯¥ê¥¹¥È¤Ø</a>";
+											$bw = "<a href=\"$cgi_file?mode=bin&day=$ymd&ip=$user_ipc\">ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆã¸</a>";
 											foreach $bk(@blists){
 												($n_ip,$c_ip) = split(/<>/,$bk);
-												if($c_ip eq $user_ipc){ $cw = "<font color=\"#ffffff\">$cw</font>"; $bw = "<b><font color=\"#cc3300\">BLACK!</font></b><a href=\"$cgi_file?mode=bout&ip=$user_ipc\">²ò½ü</a>"; last; }
+												if($c_ip eq $user_ipc){ $cw = "<font color=\"#ffffff\">$cw</font>"; $bw = "<b><font color=\"#cc3300\">BLACK!</font></b><a href=\"$cgi_file?mode=bout&ip=$user_ipc\">è§£é™¤</a>"; last; }
 											}
-											$cw .= " ¢ª$bw";
+											$cw .= " â‡’$bw";
 										}
 										$comm .= "$cw<hr noshade size=1>";
 									}
@@ -207,42 +218,46 @@ sub view {
 					}
 					if($comm ne ""){ $comm = substr($comm,0,-19); }
 					$width = int($shokei / $hiritsu);
-					$view_data .= "<tr bgcolor=\"#ffffff\" valign=\"top\"><td align=\"right\" nowrap><a href=\"$cgi_file?mode=view&yymmdd=$QUERY{'yymm'}$dw\">$dwÆü</a></td><td nowrap><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei²ó</td><td>$comm&nbsp;</td></tr>\n";
+					$view_data .= "<tr bgcolor=\"#ffffff\" valign=\"top\"><td align=\"right\" nowrap><a href=\"$cgi_file?mode=view&yymmdd=$QUERY{'yymm'}$dw\">$dwæ—¥</a></td><td nowrap><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokeiå›</td><td>$comm&nbsp;</td></tr>\n";
 				}
 			}
 			$view_data .= '</table>';
-			if($gokei <= 0){ $view_data = 'Çï¼ê¤Ï¤¢¤ê¤Ş¤»¤ó¤Ç¤·¤¿¡£'; }
+			if($gokei <= 0){ $view_data = 'è¨˜éŒ²ã¯ã‚ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚'; }
 			else{
 				@wks = sort { $b <=> $a } @wks;
-				$view_data .= '<br>Ï¢Â³Çï¼ê¿ôÆâÌõ<br>';
+				$view_data .= '<br>é€£ç¶šå›æ•°é›†è¨ˆ<br>';
 				$view_data .= '
 					<table cellspacing=1 cellpadding=4 border=0 bgcolor="#666666">
-					<tr><td bgcolor="#eeeeee" align="middle" nowrap>Çï¼ê²ó¿ô</td><td bgcolor="#eeeeee" align="middle">¿Í¿ô</td></tr>
+					<tr><td bgcolor="#eeeeee" align="middle" nowrap>å›æ•°</td><td bgcolor="#eeeeee" align="middle">æ—¥æ•°</td></tr>
 				';
 				$shokei = 0; $last_data = "";
 				foreach $kw (@wks) {
 					if($last_data ne "" && $kw ne $last_data){
 						$width = int($shokei / $hiritsu);
-						$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_data²ó&nbsp;</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei¿Í</td></tr>\n";
+						$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_dataå›&nbsp;</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokeiæ—¥</td></tr>\n";
 						$shokei = 0;
 					}
 					$shokei++;
 					$last_data = $kw;
 				}
 			$width = int($shokei / $hiritsu);
-			$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_data²ó</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei¿Í</td></tr>\n";
+			$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_dataå›</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokeiæ—¥</td></tr>\n";
 			$view_data .= '</table>';
 			}
 		}
-		else{ # Æü¥Ç¡¼¥¿É½¼¨
+		else{ # æ—¥ãƒ‡ãƒ¼ã‚¿è¡¨ç¤º
 			if(-e $log_file){
-				open(LOG,"$log_file") || &error('FILE OPEN ERROR - log');
-				@logs = <LOG>;
-				close(LOG);
+				# ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°è‡ªå‹•æ¤œå‡ºã§èª­ã¿è¾¼ã¿
+				@logs = &read_file_auto_encoding($log_file);
+				if (@logs == 0 && -e $log_file) {
+					open(LOG,"<:utf8", "$log_file") || &error('FILE OPEN ERROR - log');
+					@logs = <LOG>;
+					close(LOG);
+				}
 			}
 			$view_data = '
 				<table cellspacing=1 cellpadding=4 border=0 bgcolor="#666666">
-				<tr><td bgcolor="#eeeeee" align="middle" nowrap>»ş´Ö</td><td bgcolor="#eeeeee" align="middle" nowrap>Çï¼ê²ó¿ô</td><td bgcolor="#eeeeee" align="middle">¥³¥á¥ó¥È</td></tr>
+				<tr><td bgcolor="#eeeeee" align="middle" nowrap>æ™‚é–“</td><td bgcolor="#eeeeee" align="middle" nowrap>å›æ•°</td><td bgcolor="#eeeeee" align="middle">ã‚³ãƒ¡ãƒ³ãƒˆ</td></tr>
 			';
 			$gokei = 0; $comm = ""; $last_time = ""; $shokei = 0; @wks = ();
 			foreach (@logs) {
@@ -250,7 +265,7 @@ sub view {
 				if($last_time ne "" && $jikanw ne $last_time){
 					if($comm ne ""){ $comm = substr($comm,0,-19); }
 					$width = int($shokei / $hiritsu);
-					$view_data .= "<tr bgcolor=\"#ffffff\" valign=\"top\"><td align=\"right\" nowrap>$last_time»ş</td><td nowrap><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei²ó</td><td>$comm&nbsp;</td></tr>\n";
+					$view_data .= "<tr bgcolor=\"#ffffff\" valign=\"top\"><td align=\"right\" nowrap>$last_timeæ™‚</td><td nowrap><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokeiå›</td><td>$comm&nbsp;</td></tr>\n";
 					$comm = ""; $last_time = ""; $shokei = 0;
 				}
 				if($comw ne ""){
@@ -267,12 +282,12 @@ sub view {
 										$user_ipc .= crypt(substr($user_ipw,$keta,8),$salt);
 										$i++;
 									}
-								$bw = "<a href=\"$cgi_file?mode=bin&day=$QUERY{'yymmdd'}&ip=$user_ipc\">¥Ö¥é¥Ã¥¯¥ê¥¹¥È¤Ø</a>";
+								$bw = "<a href=\"$cgi_file?mode=bin&day=$QUERY{'yymmdd'}&ip=$user_ipc\">ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆã¸</a>";
 								foreach $bk(@blists){
 									($n_ip,$c_ip) = split(/<>/,$bk);
-									if($c_ip eq $user_ipc){ $cw = "<font color=\"#ffffff\">$cw</font>"; $bw = "<b><font color=\"#cc3300\">BLACK!</font></b><a href=\"$cgi_file?mode=bout&ip=$user_ipc\">²ò½ü</a>"; last; }
+									if($c_ip eq $user_ipc){ $cw = "<font color=\"#ffffff\">$cw</font>"; $bw = "<b><font color=\"#cc3300\">BLACK!</font></b><a href=\"$cgi_file?mode=bout&ip=$user_ipc\">è§£é™¤</a>"; last; }
 								}
-								$cw .= " ¢ª$bw";
+								$cw .= " â‡’$bw";
 							}
 							$comm .= "$cw<hr noshade size=1>";
 						}
@@ -285,38 +300,39 @@ sub view {
 			}
 			if($comm ne ""){ $comm = substr($comm,0,-19); }
 			$width = int($shokei / $hiritsu);
-			$view_data .= "<tr bgcolor=\"#ffffff\" valign=\"top\"><td align=\"right\" nowrap>$last_time»ş</td><td nowrap><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei²ó</td><td>$comm&nbsp;</td></tr>\n";
+			$view_data .= "<tr bgcolor=\"#ffffff\" valign=\"top\"><td align=\"right\" nowrap>$last_timeæ™‚</td><td nowrap><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokeiå›</td><td>$comm&nbsp;</td></tr>\n";
 			$view_data .= '</table>';
-			if($gokei <= 0){ $view_data = 'Çï¼ê¤Ï¤¢¤ê¤Ş¤»¤ó¤Ç¤·¤¿¡£'; }
+			if($gokei <= 0){ $view_data = 'è¨˜éŒ²ã¯ã‚ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚'; }
 			else{
 				@wks = sort { $b <=> $a } @wks;
-				$view_data .= '<br>Ï¢Â³Çï¼ê¿ôÆâÌõ<br>';
+				$view_data .= '<br>é€£ç¶šå›æ•°é›†è¨ˆ<br>';
 				$view_data .= '
 					<table cellspacing=1 cellpadding=4 border=0 bgcolor="#666666">
-					<tr><td bgcolor="#eeeeee" align="middle" nowrap>Çï¼ê²ó¿ô</td><td bgcolor="#eeeeee" align="middle">¿Í¿ô</td></tr>
+					<tr><td bgcolor="#eeeeee" align="middle" nowrap>å›æ•°</td><td bgcolor="#eeeeee" align="middle">æ—¥æ•°</td></tr>
 				';
 				$shokei = 0; $last_data = "";
 				foreach $kw (@wks) {
 					if($last_data ne "" && $kw ne $last_data){
 						$width = int($shokei / $hiritsu);
-						$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_data²ó</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei¿Í</td></tr>\n";
+						$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_dataï¿½ï¿½</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokeiï¿½ï¿½</td></tr>\n";
 						$shokei = 0;
 					}
 					$shokei++;
 					$last_data = $kw;
 				}
 			$width = int($shokei / $hiritsu);
-			$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_data²ó</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei¿Í</td></tr>\n";
+			$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_dataï¿½ï¿½</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokeiï¿½ï¿½</td></tr>\n";
 			$view_data .= '</table>';
 			}
 		}
 
-	print "Content-Type: text/html\n\n";
+	binmode(STDOUT, ":utf8");
+	print "Content-Type: text/html; charset=UTF-8\n\n";
 	print "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
 	print <<"EOM";
 		<html>
 		<head><title>PATIPATI LOG</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<style type="text/css">
 		<!--
 		body, tr, td { font-size: 10pt; }
@@ -326,18 +342,18 @@ sub view {
 		A:link,A:active { color: #6699cc }
 		A:visited { color: #336699 }
 		A:hover { color: #999999 }
-		input,textarea,select {            /* ¥Õ¥©¡¼¥àÆâ¤ÎÀßÄê  */
-			font-size       :12px;             /* Ê¸»ú¥µ¥¤¥º  */
-			color           :#666666;          /*   Ê¸»ú¿§    */
-			background-color:#eeeeee;          /*   ÇØ·Ê¿§    */
-			border          :1 solid #999999; /* Àş¤ÎÂÀ¤µ¡¢¿§*/ 
+		input,textarea,select {            /* ãƒ•ã‚©ãƒ¼ãƒ éƒ¨å“  */
+			font-size       :12px;             /* æ–‡å­—ã‚µã‚¤ã‚º  */
+			color           :#666666;          /*   æ–‡å­—è‰²    */
+			background-color:#eeeeee;          /*   èƒŒæ™¯è‰²    */
+			border          :1 solid #999999; /* æ ç·šã‚¹ã‚¿ã‚¤ãƒ«*/
 		}
 		-->
 		</style>
 		<base target="patiview">
 		</head>
 		<body bgcolor="#ffffff" text="#666666">
-		$now_date Çï¼ê¹ç·×¡§<big><b>$gokei</b>²ó</big>
+		$now_date ç·ã‚¢ã‚¯ã‚»ã‚¹<big><b>$gokei</b>å›</big>
 		<hr noshade size=1>
 		$view_data
 		<hr noshade size=1>- $systeminfo -
@@ -346,7 +362,7 @@ EOM
 	exit;
 }
 
-#===============================¥í¥°¥Õ¥¡¥¤¥ë¼ı½¸===========================
+#===============================ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«åé›†===========================
 sub log_shushu{
 	if($shell_use == 1){
 		$time_w2 = $time_w - 60*60*24*30*$log_max;
@@ -377,13 +393,17 @@ sub log_shushu{
 	@wfilesw = sort { $b <=> $a } @wfiles;
 }
 
-#===============================¥Ö¥é¥Ã¥¯¥ê¥¹¥Èµ­Ä¢===========================
+#===============================ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆè¨˜éŒ²===========================
 sub bin{
-	$log_file = $log_dir .$QUERY{'day'} .'.' .cgi; # ¥í¥°¥Õ¥¡¥¤¥ë
+	$log_file = $log_dir .$QUERY{'day'} .'.' .cgi; # ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«
 	if(-e $log_file){
-		open(LOG,"$log_file") || &error('FILE OPEN ERROR - log');
-		@logs = <LOG>;
-		close(LOG);
+		# ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°è‡ªå‹•æ¤œå‡ºã§èª­ã¿è¾¼ã¿
+		@logs = &read_file_auto_encoding($log_file);
+		if (@logs == 0 && -e $log_file) {
+			open(LOG,"<:utf8", "$log_file") || &error('FILE OPEN ERROR - log');
+			@logs = <LOG>;
+			close(LOG);
+		}
 		$ipw = "";
 		foreach (@logs) {
 			($jikanw,$user_ipw,$kaisuw,$comw) = split("<>",$_);
@@ -399,51 +419,64 @@ sub bin{
 			if($user_ipc eq $QUERY{'ip'}){ $ipw = $user_ipw; }
 		}
 	}
-	open(BLT,"$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
-	@blists = <BLT>;
-	close(BLT);
+	# ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°è‡ªå‹•æ¤œå‡ºã§èª­ã¿è¾¼ã¿
+	@blists = &read_file_auto_encoding($ip_ck_file);
+	if (@blists == 0 && -e $ip_ck_file) {
+		open(BLT,"<:utf8", "$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
+		@blists = <BLT>;
+		close(BLT);
+	}
 	if($ip_ck_su != 0){ while(@blists >= $ip_ck_su){ pop @blists; } }
 	unshift(@blists,"$ipw<>$QUERY{'ip'}<>\n");
-	open(OUT,">$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
+	open(OUT,">:utf8", "$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
 	print OUT @blists;
 	close(OUT);
-	# ¥ê¥í¡¼¥É½èÍı
+	# ç”»é¢è¡¨ç¤º
     print "Location: $cgi_file?mode=view\n\n";
 }
 
-#===============================¥Ö¥é¥Ã¥¯¥ê¥¹¥È²ò½ü===========================
+#===============================ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆè§£é™¤===========================
 sub bout{
-	open(BLT,"$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
-	@blists = <BLT>;
-	close(BLT);
+	# ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°è‡ªå‹•æ¤œå‡ºã§èª­ã¿è¾¼ã¿
+	@blists = &read_file_auto_encoding($ip_ck_file);
+	if (@blists == 0 && -e $ip_ck_file) {
+		open(BLT,"<:utf8", "$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
+		@blists = <BLT>;
+		close(BLT);
+	}
 	@news = ();
 	foreach (@blists){
 		($n_ip,$c_ip) = split(/<>/,$_);
 		if($c_ip ne $QUERY{'ip'}){ push(@news,$_); }
 	}
-	open(OUT,">$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
+	open(OUT,">:utf8", "$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
 	print OUT @news;
 	close(OUT);
-	# ¥ê¥í¡¼¥É½èÍı
+	# ç”»é¢è¡¨ç¤º
     print "Location: $cgi_file?mode=view\n\n";
 }
 
-#===============================¥Ö¥é¥Ã¥¯¥ê¥¹¥ÈÉ½¼¨===========================
+#===============================ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆè¡¨ç¤º===========================
 sub blist{
-	open(BLT,"$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
-	@blists = <BLT>;
-	close(BLT);
+	# ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°è‡ªå‹•æ¤œå‡ºã§èª­ã¿è¾¼ã¿
+	@blists = &read_file_auto_encoding($ip_ck_file);
+	if (@blists == 0 && -e $ip_ck_file) {
+		open(BLT,"<:utf8", "$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
+		@blists = <BLT>;
+		close(BLT);
+	}
 	$bdata = "";
 	foreach $bk(@blists){
 		($n_ip,$c_ip) = split(/<>/,$bk);
-		$bdata .= "<tr><td bgcolor=\"#ffffff\">$c_ip</td><td bgcolor=\"#ffffff\"><a href=\"$cgi_file?mode=bout&ip=$c_ip\">²ò½ü</a></td></tr>";
+		$bdata .= "<tr><td bgcolor=\"#ffffff\">$c_ip</td><td bgcolor=\"#ffffff\"><a href=\"$cgi_file?mode=bout&ip=$c_ip\">è§£é™¤</a></td></tr>";
 	}
-	print "Content-Type: text/html\n\n";
+	binmode(STDOUT, ":utf8");
+	print "Content-Type: text/html; charset=UTF-8\n\n";
 	print "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
 	print <<"EOM";
 		<html>
-		<head><title>PATIPATI ¥Ö¥é¥Ã¥¯¥ê¥¹¥ÈÉ½¼¨</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
+		<head><title>PATIPATI ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆè¡¨ç¤º</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<style type="text/css">
 		<!--
 		body, tr, td { font-size: 10pt; }
@@ -460,7 +493,7 @@ sub blist{
 		</head>
 		<body bgcolor="#ffffff" text="#666666">
 		<table cellspacing=1 cellpadding=4 border=0 bgcolor="#666666">
-		<tr><td bgcolor="#cccccc">°Å¹æ²½¤µ¤ì¤¿IP</td><td bgcolor="#cccccc">²ò½ü</td></tr>
+		<tr><td bgcolor="#cccccc">æ‹’å¦ç™»éŒ²ã•ã‚ŒãŸIP</td><td bgcolor="#cccccc">è§£é™¤</td></tr>
 		$bdata
 		</table>
 		<hr noshade size=1>- $systeminfo -
@@ -469,14 +502,14 @@ EOM
 	exit;
 }
 
-#===============================¥í¥°¥¢¥¦¥È½èÍı===========================
+#===============================ãƒ­ã‚°ã‚¢ã‚¦ãƒˆåˆ¤å®š===========================
 sub logout{
 	&set_adcookie("0","");
-	# ¥ê¥í¡¼¥É½èÍı
+	# ç”»é¢è¡¨ç¤º
     print "Location: $cgi_file?\n\n";
 }
 
-#===============================¥¯¥Ã¥­¡¼¤Î¼èÆÀ===========================
+#===============================ã‚¯ãƒƒã‚­ãƒ¼ã®å–å¾—===========================
 sub get_adcookie{
 	@pairs = split(/\;/, $ENV{'HTTP_COOKIE'});
 	foreach $pair (@pairs) {
@@ -491,7 +524,7 @@ sub get_adcookie{
 	}
 }
 
-#===============================¥¯¥Ã¥­¡¼¤ÎÈ¯¹Ô($daysÆü´ÖÍ­¸ú)===========================
+#===============================ã‚¯ãƒƒã‚­ãƒ¼ç™ºè¡Œ($daysæ—¥æœ‰åŠ¹)===========================
 sub set_adcookie{
 	my $days = $_[0];
 	my $cook = $_[1];
