@@ -108,7 +108,7 @@ foreach my $pair (@pairs) {
 			$msgw =~ tr/A-Z/a-z/;
 			if($com_jisu != 0 && $com_jisu < length($msg)){ &error("すみません。メッセージは半角$com_jisu文字（全角の場合その半分）までです。"); }
 			if($delspam ne "1") {
-			if(($msg ne "") && ($msg !~ m/[\x80-\xff]/)) {&error('変数：半角のみ引っ掛けはスパム禁止のため送信できません。'); }
+			if(($msg ne "") && ($msg !~ m/[^\x00-\x7f]/)) {&error('変数：半角のみ引っ掛けはスパム禁止のため送信できません。'); }
 			}
 
 			$ng_ck = 0;
