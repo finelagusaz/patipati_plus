@@ -1,6 +1,7 @@
-#!"C:\xampp\perl\bin\perl.exe"
-# TODO: ¥Ñ¥¹ÊÑ¤¨¤ë
 #!/usr/bin/perl
+use utf8;
+use Encode qw/decode encode/;
+use Encode::Guess qw/shift_jis euc-jp utf8/;
 
 #=======================================================================================
 #				 PatiPati System                                                   Script by HAL
@@ -8,29 +9,43 @@
 #=======================================================================================
 require './preset.cgi';
 require './sub.pl';
-require $jcode;
 $cookie_name = 'patipati';
 
 if ($ENV{'REQUEST_METHOD'} eq "POST") {
 	read(STDIN, $formdata, $ENV{'CONTENT_LENGTH'});
 } else { $formdata = $ENV{'QUERY_STRING'}; }
 @pairs = split(/&/,$formdata);
-foreach $pair (@pairs) {
-	($name, $value) = split(/=/, $pair);
+foreach my $pair (@pairs) {
+	my ($name, $value) = split(/=/, $pair);
 	$value =~ tr/+/ /;
 	$value =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
 	$value =~ s/</&lt;/g;
 	$value =~ s/>/&gt;/g;
 	$value =~ s/\n//g;
 	$value =~ s/\,//g;
-	&jcode'convert(*value,'euc');
+	# ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°è‡ªå‹•æ¤œå‡ºã§ãƒ‡ã‚³ãƒ¼ãƒ‰ï¼ˆShift_JIS/EUC-JP/UTF-8ã«å¯¾å¿œï¼‰
+	if (length($value) > 0) {
+		eval {
+			my $enc = guess_encoding($value, qw/utf8 shiftjis euc-jp/);
+			if (ref($enc)) {
+				$value = $enc->decode($value);
+			} else {
+				# æ¨æ¸¬å¤±æ•—æ™‚ã¯UTF-8ã¨ã—ã¦æ‰±ã†
+				$value = decode('utf8', $value);
+			}
+		};
+		# ãƒ‡ã‚³ãƒ¼ãƒ‰ã‚¨ãƒ©ãƒ¼æ™‚ã¯ãã®ã¾ã¾ä½¿ç”¨
+		if ($@) {
+			$value = decode('utf8', $value, Encode::FB_QUIET);
+		}
+	}
 	$QUERY{$name} = $value;
 }
 
-#================================¥á¥¤¥ó½èÍı=================================
+#================================ãƒ¡ã‚¤ãƒ³å‡¦ç†=================================
 	&get_cookie;
 	&Setdirectory;
-	if(!(-e $ip_ck_file)){ # ¥Ö¥é¥Ã¥¯¥ê¥¹¥Æ¥£¥ó¥°¥Õ¥¡¥¤¥ë¤¬¤Ê¤¤¾ì¹ç¤ÏÀ¸À®
+	if(!(-e $ip_ck_file)){ # ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒ†ã‚£ãƒ³ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ãŒãªã„å ´åˆã¯ä½œæˆ
 				open(OUT,">$ip_ck_file");
 				print OUT "";
 				close(OUT);
@@ -38,14 +53,14 @@ foreach $pair (@pairs) {
 
 			}
 
-	if(!(-e $Gindex)){ # index.html¤¬¤Ê¤¤¾ì¹ç¤ÏÀ¸À®
+	if(!(-e $Gindex)){ # index.htmlãŒãªã„å ´åˆã¯ä½œæˆ
 				open(OUT,">$Gindex") || &error('FILE OPEN ERROR - log');
 				print OUT "<Content-type: text/html>";
 				close(OUT);
 
 			}
 	if($COOKIE{'f'} == 1){
-		open(HTML,"$last_file") || die "¥Õ¥¡¥¤¥ë¥ª¡¼¥×¥ó¤Ë¼ºÇÔ¤·¤Ş¤·¤¿ - design";
+		open(HTML,"<:utf8", "$last_file") || &error("ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸ - $last_file");
 		@htmls = <HTML>;
 		close(HTML);
 	}else{
@@ -53,51 +68,36 @@ foreach $pair (@pairs) {
 		$QUERY{'pkai'}++;
 		$hidden = "<input type=\"hidden\" name=\"pkai\" value=\"$QUERY{'pkai'}\">";
 		$gn = &get_date($time_w);
-		# ²áµî¥Ç¡¼¥¿¾Ãµî
+		# æ—§ãƒ‡ãƒ¼ã‚¿å‰Šé™¤
 			&del_logs;
 		$gn = &get_date($time_w);
 		$user_ipg = $ENV{'REMOTE_ADDR'};
-		# crypt
-			$ic = length($user_ipg) / 8;
-			if(length($user_ipg) % 8 != 0){ $ic++; }
-			$i = 0; $crypt_ip = "";
-			while($i <= $ic){
-				$keta = $i*8;
-				$crypt_ip .= crypt(substr($user_ipg,$keta,8),$salt);
-				$i++;
-			}
-		# ¥Ö¥é¥Ã¥¯¥ê¥¹¥È½èÍı
+		$crypt_ip = &encrypt_ip($user_ipg);
+		# ãƒ–ãƒ©ãƒƒã‚¯ãƒªã‚¹ãƒˆåˆ¤æ–­
 			$bk_ck = 0;
 			if($ip_ck == 1){
-				open(BLT,"$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
-				@blists = <BLT>;
-				close(BLT);
+				# ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°è‡ªå‹•æ¤œå‡ºã§èª­ã¿è¾¼ã¿
+				@blists = &read_file_auto_encoding($ip_ck_file);
 			}
 
-			#URL¥¹¥Ñ¥àÂĞºö¹Ô
-			if($kickurl eq 1) {
-			if($QUERY{'com'} =~ "http") {&error('URL¤ÎÆş¤Ã¤¿Ê¸¾Ï¤Ï¥¹¥Ñ¥àÂĞºö¤Î¤¿¤á¤½¤Î¤Ş¤Ş¤Ç¤ÏÁ÷¿®¤Ç¤­¤Ş¤»¤ó¡£<br>Æ¬¤Î£è¤òÈ´¤¯¤Ê¤É¤·¤ÆÁ÷¿®¤·¤Æ¤¯¤À¤µ¤¤¡£'); }
-			}
-			#±Ñ¿ôÈ¾³ÑÂĞºö
-			if($delspam ne "0") {
-			if(($QUERY{'com'} ne "") && ($QUERY{'com'} !~ m/[\x80-\xff]/)) {&error('±Ñ¿ôÈ¾³Ñ¤Î¤ß¤ÎÅê¹Æ¤Ï¥¹¥Ñ¥àËÉ»ß¤Î¤¿¤áÁ÷¿®¤Ç¤­¤Ş¤»¤ó'); }
-			}
+			# ã‚¹ãƒ‘ãƒ å¯¾ç­–ãƒã‚§ãƒƒã‚¯
+			&check_spam($QUERY{'com'}, $kickurl, $delspam);
 
-			foreach $bk(@blists){
-				($n_ip,$c_ip) = split(/<>/,$bk);
+			foreach my $bk(@blists){
+				my ($n_ip, $c_ip) = split(/<>/,$bk);
 				if($c_ip eq $crypt_ip){ $bk_ck = 1; last; }
 			}
-			
+
 		if($ip_ck == 1 && $bk_ck == 1 && $ip_ck_msg ne ""){ &error("$ip_ck_msg"); }
 		if($bk_ck == 0){
-			$i = 1;
+			my $i = 1;
 			while($i <= $sub_su){
-				$wk = 'sub' .$i;
+				my $wk = 'sub' .$i;
 				if($QUERY{$wk} ne ""){
 					$QUERY{$wk} =~ s/\r\n//g;
 					$QUERY{$wk} =~ s/\r//g;
 					$QUERY{$wk} =~ s/\n//g;
-					$QUERY{'com'} .= "¡Ê$QUERY{$wk}¡Ë";
+					$QUERY{'com'} .= "ã€$QUERY{$wk}ã€‘";
 				}
 				$i++;
 			}
@@ -106,15 +106,14 @@ foreach $pair (@pairs) {
 			$msg = $QUERY{'com'};
 			$msgw = $msg;
 			$msgw =~ tr/A-Z/a-z/;
-			if($com_jisu != 0 && $com_jisu < length($msg)){ &error("Á÷¿®¤Ç¤­¤ë¥á¥Ã¥»¡¼¥¸¤ÏÈ¾³Ñ$com_jisuÊ¸»ú¡ÊÁ´³Ñ¤Î¾ì¹ç¤½¤ÎÈ¾Ê¬¡Ë¤Ş¤Ç¤Ç¤¹¡£"); }
+			if($com_jisu != 0 && $com_jisu < length($msg)){ &error("ã™ã¿ã¾ã›ã‚“ã€‚ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã¯åŠè§’$com_jisuæ–‡å­—ï¼ˆå…¨è§’ã®å ´åˆãã®åŠåˆ†ï¼‰ã¾ã§ã§ã™ã€‚"); }
 			if($delspam ne "1") {
-			if(($msg ne "") && ($msg !~ m/[\x80-\xff]/)) {&error('±Ñ¿ôÈ¾³Ñ¤Î¤ß¤ÎÅê¹Æ¤Ï¥¹¥Ñ¥àËÉ»ß¤Î¤¿¤áÁ÷¿®¤Ç¤­¤Ş¤»¤ó'); }
+			if(($msg ne "") && ($msg !~ m/[\x80-\xff]/)) {&error('å¤‰æ•°ï¼šåŠè§’ã®ã¿å¼•ã£æ›ã‘ã¯ã‚¹ãƒ‘ãƒ ç¦æ­¢ã®ãŸã‚é€ä¿¡ã§ãã¾ã›ã‚“ã€‚'); }
 			}
 
 			$ng_ck = 0;
 			if($msg ne ""){
-				foreach $ngw (@ngs){
-					&jcode'convert(*ngw,'euc');
+				foreach my $ngw (@ngs){
 					$ngw =~ tr/A-Z/a-z/;
 					if($ngw ne "" && index($msgw,$ngw) >= 0){ $ng_ck = 1; }
 				}
@@ -122,32 +121,23 @@ foreach $pair (@pairs) {
 			if($ng_ck == 1 && $ng_ck_msg ne ""){ &error($ng_ck_msg); }
 			elsif($ng_ck == 0){
 				$QUERY{'com'} =~ s/\n/<br>/g;
-				$log_file = $log_dir .$gw .'.cgi'; # ¥í¥°¥Õ¥¡¥¤¥ë
-				# ¥í¥Ã¥¯³«»Ï
+				$log_file = $log_dir .$gw .'.cgi'; # ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«
+				# ãƒ­ãƒƒã‚¯é–‹å§‹
 					if ($lockkey == 1) { &lock1; }
 					elsif ($lockkey == 2) { &lock2; }
-				if(!(-e $log_file)){ # ¥í¥°¥Õ¥¡¥¤¥ë¤¬¤Ê¤¤¾ì¹ç¤ÏÀ¸À®
-					open(OUT,">$log_file") || &error('FILE OPEN ERROR - log');
+				if(!(-e $log_file)){ # ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ãŒãªã„å ´åˆã¯ä½œæˆ
+					open(OUT,">:utf8", "$log_file") || &error('FILE OPEN ERROR - log');
 					print OUT "";
 					close(OUT);
 					chmod (0666,$log_file);
 				}
-				open(LOG,"$log_file") || &error('FILE OPEN ERROR - log');
-				@logs = <LOG>;
-				close(LOG);
+				# ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°è‡ªå‹•æ¤œå‡ºã§èª­ã¿è¾¼ã¿ï¼ˆæ—¢å­˜ãƒ­ã‚°ã¨ã®äº’æ›æ€§ã®ãŸã‚ï¼‰
+				@logs = &read_file_auto_encoding($log_file);
 				@news = ();
 				$kaisu = 1;
 				foreach (@logs) {
-					($jikanw,$user_ipw,$kaisuw,$comw) = split("<>",$_);
-					# crypt
-						$ic = length($user_ipw) / 8;
-						if(length($user_ipw) % 8 != 0){ $ic++; }
-						$i = 0; $user_ipc = "";
-						while($i <= $ic){
-							$keta = $i*8;
-							$user_ipc .= crypt(substr($user_ipw,$keta,8),$salt);
-							$i++;
-					}
+					my ($jikanw, $user_ipw, $kaisuw, $comw) = split("<>",$_);
+					$user_ipc = &encrypt_ip($user_ipw);
 					if($user_ipg eq $user_ipw && $jikanw eq $jikan){
 						$kaisu = $kaisuw + 1;
 						if($QUERY{'com'} ne ""){ $QUERY{'com'} = $comw ."<#>$QUERY{'com'}"; }
@@ -157,94 +147,66 @@ foreach $pair (@pairs) {
 				if($clap_su == 0 || $kaisu <= $clap_su){
 					push(@news,"$jikan<>$user_ipg<>$kaisu<>$QUERY{'com'}<>\n");
 					@sorted = sort { $a <=> $b } @news;
-					open(OUT,">$log_file") || &error('FILE OPEN ERROR - log');
+					open(OUT,">:utf8", "$log_file") || &error('FILE OPEN ERROR - log');
 					print OUT @sorted;
 					close(OUT);
 				}
 
-			#URL¥¹¥Ñ¥àÂĞºö¹Ô
-			if($kickurl eq 1) {
-			if($QUERY{'com'} =~ "http") {&error('URL¤ÎÆş¤Ã¤¿Ê¸¾Ï¤Ï¥¹¥Ñ¥àÂĞºö¤Î¤¿¤á¤½¤Î¤Ş¤Ş¤Ç¤ÏÁ÷¿®¤Ç¤­¤Ş¤»¤ó¡£<br>Æ¬¤Î£è¤òÈ´¤¯¤Ê¤É¤·¤ÆÁ÷¿®¤·¤Æ¤¯¤À¤µ¤¤¡£'); }
-			}
-			#±Ñ¿ôÈ¾³ÑÂĞºö
-			if($delspam ne "0") {
-			if(($QUERY{'com'} ne "") && ($QUERY{'com'} !~ m/[\x80-\xff]/)) {&error('±Ñ¿ôÈ¾³Ñ¤Î¤ß¤ÎÅê¹Æ¤Ï¥¹¥Ñ¥àËÉ»ß¤Î¤¿¤áÁ÷¿®¤Ç¤­¤Ş¤»¤ó'); }
-			}
-
-				&unlock; # ¥í¥Ã¥¯²ò½ü
+				&unlock; # ãƒ­ãƒƒã‚¯è§£é™¤
 				if($msg ne "" && $mail_ck == 1){ &mail; }
 			}
 	  }
-		$ifile = @location_files;
+		my $ifile = @location_files;
 		if($locate_rand == 1){
 			srand;
-			$r = int(rand($ifile));
+			my $r = int(rand($ifile));
 			$location_file = @location_files[$r];
 		}elsif($locate_rand == 2){
-			$i = $kaisu;
+			my $i = $kaisu;
 			$location_file = @location_files[$i-1];
 			if($i >= $ifile){ $location_file = @location_files[$ifile-1]; }
 		}else{
-			$i = $kaisu;
+			my $i = $kaisu;
 			while($i > $ifile){ $i -= $ifile; }
 			$location_file = @location_files[$i-1];
 		}
 		if($clap_su != 0 && $kaisu >= $clap_su){
 			&set_cookie();
-			open(HTML,"$last_file") || die "¥Õ¥¡¥¤¥ë¥ª¡¼¥×¥ó¤Ë¼ºÇÔ¤·¤Ş¤·¤¿ - design";
+			open(HTML,"<:utf8", "$last_file") || &error("ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸ - $last_file");
 			@htmls = <HTML>;
 			close(HTML);
 		}else{
-			open(HTML,"$location_file") || die "¥Õ¥¡¥¤¥ë¥ª¡¼¥×¥ó¤Ë¼ºÇÔ¤·¤Ş¤·¤¿ - design";
+			open(HTML,"<:utf8", "$location_file") || &error("ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸ - $location_file");
 			@htmls = <HTML>;
 			close(HTML);
 		}
 	}
 
-			#±Ñ¿ôÈ¾³ÑÂĞºö
-			if($delspam ne "0") {
-			if(($msg ne "") && ($QUERY{'com'} !~ m/[\x80-\xff]/)) {&error('±Ñ¿ôÈ¾³Ñ¤Î¤ß¤ÎÅê¹Æ¤Ï¥¹¥Ñ¥àËÉ»ß¤Î¤¿¤áÁ÷¿®¤Ç¤­¤Ş¤»¤ó'); }
-			}
-
-
-			#URL¥¹¥Ñ¥àÂĞºö¹Ô
-			if($kickurl eq 1) {
-			if($msg =~ "http") {&error('URL¤ÎÆş¤Ã¤¿Ê¸¾Ï¤Ï¥¹¥Ñ¥àÂĞºö¤Î¤¿¤á¤½¤Î¤Ş¤Ş¤Ç¤ÏÁ÷¿®¤Ç¤­¤Ş¤»¤ó¡£<br>Æ¬¤Î£è¤òÈ´¤¯¤Ê¤É¤·¤ÆÁ÷¿®¤·¤Æ¤¯¤À¤µ¤¤¡£'); }
-			};
+			# ã‚¹ãƒ‘ãƒ å¯¾ç­–ãƒã‚§ãƒƒã‚¯ï¼ˆ$msgã«å¯¾ã—ã¦ã€åŠè§’ãƒã‚§ãƒƒã‚¯ç„¡åŠ¹ã§å®Ÿè¡Œï¼‰
+			&check_spam($msg, $kickurl, "1");
 
 	if ($msg ne "") {
-		($msg_in = $msg);
-		&jcode'convert(*msg_in,'sjis');
-		($comment_over = "°Ê²¼¤Î¥á¥Ã¥»¡¼¥¸¤¬Á÷¿®¤µ¤ì¤Ş¤·¤¿¡£");
-		&jcode'convert(*comment_over,'sjis');
+		$msg_in = $msg;
+		$comment_over = "ä»¥ä¸‹ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’é€ä¿¡ã—ã¾ã—ãŸã€‚";
 	}
 	if ($clap_su eq "0") {
-		($clap_su_v = "À©¸ÂÌµ¤·");
-		($clap_su_v2 = "¤Ç");
-		&jcode'convert(*clap_su_v,'sjis');
-		&jcode'convert(*clap_su_v2,'sjis');
+		$clap_su_v = "åˆ¶é™ç„¡åŠ¹";
+		$clap_su_v2 = "å›";
 	}else{
-		($clap_su_v = $clap_su);
-		($clap_su_v2 = "²ó¤Ş¤Ç");
-		&jcode'convert(*clap_su_v2,'sjis');
+		$clap_su_v = $clap_su;
+		$clap_su_v2 = "å›ã¾ã§";
 	}
 
 	if ($com_jisu eq "0") {
-		($moji_hmax_v = "ÌµÀ©¸Â");
-		($moji_hmax_v2 = "¤Ë");
-		($moji_zmax = "ÌµÀ©¸Â");
-		($moji_zmax_v2 = "¤Ë");
-		&jcode'convert(*moji_hmax_v,'sjis');
-		&jcode'convert(*moji_hmax_v2,'sjis');
-		&jcode'convert(*moji_zmax,'sjis');
-		&jcode'convert(*moji_zmax_v2,'sjis');
+		$moji_hmax_v = "ç„¡åˆ¶é™";
+		$moji_hmax_v2 = "å­—";
+		$moji_zmax = "ç„¡åˆ¶é™";
+		$moji_zmax_v2 = "å­—";
 	}else{
-		($moji_hmax_v = $com_jisu);
-		($moji_hmax_v2 = "Ê¸»ú");
-		&jcode'convert(*moji_hmax_v2,'sjis');
-		($moji_zmax = int($com_jisu / 2));
-		($moji_zmax_v2 = "Ê¸»ú");
-		&jcode'convert(*moji_zmax_v2,'sjis');
+		$moji_hmax_v = $com_jisu;
+		$moji_hmax_v2 = "æ–‡å­—";
+		$moji_zmax = int($com_jisu / 2);
+		$moji_zmax_v2 = "æ–‡å­—";
 	}
 
 	$html = "";
@@ -258,52 +220,54 @@ foreach $pair (@pairs) {
 	$html =~ s/<!--clap_kankaku-->/$clap_kankaku/g;
 	$html =~ s/<!--moji_hmax-->/$moji_hmax_v/g;
 	$html =~ s/<!--moji_hmax_v2-->/$moji_hmax_v2/g;
-		#$moji_zmax = int($com_jisu / 2) ; ¥ª¥ê¥¸¥Ê¥ë¤Î½èÍı
 	$html =~ s/<!--moji_zmax-->/$moji_zmax/g;
 	$html =~ s/<!--moji_zmax_v2-->/$moji_zmax_v2/g;
 	$html =~ s/<!--system-->/$systeminfo/g;
-	print "Content-Type: text/html; charset=Shift_JIS\n\n";
-		#print "Content-Type: text/html;charset=EUC-JP\n\n"; ¥ª¥ê¥¸¥Ê¥ë¤Î½èÍı
-	print "<!DOCTYPE HTML PUBLIC -//IETF//DTD HTML//EN>\n";
+
+	# UTF-8ã§å‡ºåŠ›
+	binmode(STDOUT, ":utf8");
+	print "Content-Type: text/html; charset=UTF-8\n\n";
+	print "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
 	print $html;
 	exit;
 
 
-#================================¥á¡¼¥ëÅ¾Á÷½èÍı=================================
+#================================ãƒ¡ãƒ¼ãƒ«è»¢é€å‡¦ç†=================================
 sub mail{
-	&jcode'convert(*subject,'jis');
-	&jcode'convert(*msg,'jis');
+	# ãƒ¡ãƒ¼ãƒ«é€ä¿¡æ™‚ã¯ISO-2022-JPã«ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰
+	my $subject_jis = encode('iso-2022-jp', $subject);
+	my $msg_jis = encode('iso-2022-jp', $msg);
 
-	foreach $mlw (@mailtos){
-		$mailtow = $mlw;
-		if (!open(MAIL,"| $sendmail $mailtow")) { &error('²¿¤é¤«¤Î¸¶°ø¤ÇÁ÷¿®¤Ç¤­¤Ş¤»¤ó¤Ç¤·¤¿¡£'); }
+	foreach my $mlw (@mailtos){
+		my $mailtow = $mlw;
+		if (!open(MAIL,"| $sendmail $mailtow")) { &error('ä½•ã‚‰ã‹ã®åŸå› ã§é€ä¿¡ã§ãã¾ã›ã‚“ã§ã—ãŸã€‚'); }
 			print MAIL "X-Mailer: GNBSys\n";
 			print MAIL "To: $mailtow\n";
 			print MAIL "From: $mailtow\n";
-			print MAIL "Subject: $subject\n";
+			print MAIL "Subject: $subject_jis\n";
 			print MAIL "Content-Transfer-Encoding: 7bit\n";
 			print MAIL "Content-Type: text/plain\; charset=\"ISO-2022-JP\"\n\n";
-			print MAIL "$msg";
+			print MAIL "$msg_jis";
 			close(MAIL);
 	}
 }
 
-#===============================¥¯¥Ã¥­¡¼¤Î¼èÆÀ===========================
+#===============================ã‚¯ãƒƒã‚­ãƒ¼ã®å–å¾—===========================
 sub get_cookie{
 	@pairs = split(/\;/, $ENV{'HTTP_COOKIE'});
-	foreach $pair (@pairs) {
-		local($name, $value) = split(/\=/, $pair);
+	foreach my $pair (@pairs) {
+		my ($name, $value) = split(/\=/, $pair);
 		$name =~ s/ //g;
 		$DUMMY{$name} = $value;
 	}
 	@pairs = split(/\,/, $DUMMY{$cookie_name});
-	foreach $pair (@pairs) {
-		local($name, $value) = split(/<>/, $pair);
+	foreach my $pair (@pairs) {
+		my ($name, $value) = split(/<>/, $pair);
 		$COOKIE{$name} = $value;
 	}
 }
 
-#===============================¥¯¥Ã¥­¡¼¤ÎÈ¯¹Ô(60Æü´ÖÍ­¸ú)===========================
+#===============================ã‚¯ãƒƒã‚­ãƒ¼ã®ç™ºè¡Œ(60åˆ†æœ‰åŠ¹)===========================
 sub set_cookie{
 	($secg,$ming,$hourg,$mdayg,$mong,$yearg,$wdayg,$dmy,$dmy)
 					 	= gmtime(time + 60*60*$clap_kankaku);
@@ -320,7 +284,7 @@ sub set_cookie{
 	print "Set-Cookie: $cookie_name=$cook; expires=\"$date_gmt\"\n";
 }
 
-#---------------------------------¥Ç¥£¥ì¥¯¥È¥êºîÀ®½èÍı--------------------------
+#---------------------------------ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªç”Ÿæˆ--------------------------
 sub Setdirectory{
 	$LockDirc = "lock";
 	( mkdir $log_dir );
