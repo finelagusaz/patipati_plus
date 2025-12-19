@@ -9,13 +9,57 @@ $systeminfo = '<a href="http://www.gnbnet.com/" target="_blank">PatiPati (Ver 4.
 $systeminfo2 = '<a href="http://www.gnbnet.com/" target="_blank">PatiPati (Ver 4.3)</a> + <a href="http://www3.to/gift/" target="_blank">Towa </a>';
 $salt = 'pt';
 
+#======================================IPアドレス暗号化=================================
+sub encrypt_ip {
+	my ($ip_address) = @_;
+	my $crypt_ip = "";
+
+	# IPアドレスを8文字ずつに分割して暗号化
+	my $ic = length($ip_address) / 8;
+	if (length($ip_address) % 8 != 0) { $ic++; }
+
+	my $i = 0;
+	while ($i <= $ic) {
+		my $keta = $i * 8;
+		$crypt_ip .= crypt(substr($ip_address, $keta, 8), $salt);
+		$i++;
+	}
+
+	return $crypt_ip;
+}
+
+#======================================スパム対策チェック=================================
+sub check_spam {
+	my ($text, $kickurl, $delspam) = @_;
+
+	# URLスパム対策
+	if ($kickurl eq 1) {
+		if ($text =~ /http/i) {
+			&error('URLが含む文字列はスパム対策のためそのままでは送信できません。<br>頭のhを消すなど工夫してみてください。');
+		}
+	}
+
+	# 半角のみスパム対策
+	if ($delspam ne "0") {
+		if (($text ne "") && ($text !~ m/[\x80-\xff]/)) {
+			&error('変数：半角のみ引っ掛けはスパム禁止のため送信できません。');
+		}
+	}
+}
+
 #======================================エンコーディング自動検出でファイルを読み込む=================================
 sub read_file_auto_encoding {
 	my ($filename) = @_;
 	my @lines;
 
+	# ファイルが存在しない場合
+	return () unless -e $filename;
+
 	# ファイルをバイナリモードで読み込み
-	open(my $fh, '<', $filename) or return ();
+	unless (open(my $fh, '<', $filename)) {
+		warn "Cannot open file $filename: $!";
+		return ();
+	}
 	binmode($fh);
 	my $content = do { local $/; <$fh> };
 	close($fh);
@@ -33,9 +77,17 @@ sub read_file_auto_encoding {
 		# 行末の改行を復元
 		@lines = map { $_ . "\n" } @lines;
 	} else {
-		# 推測失敗：UTF-8として読み込む
-		@lines = split(/\n/, decode('utf8', $content));
-		@lines = map { $_ . "\n" } @lines;
+		# 推測失敗：UTF-8として試みる
+		eval {
+			@lines = split(/\n/, decode('utf8', $content, Encode::FB_CROAK));
+			@lines = map { $_ . "\n" } @lines;
+		};
+		if ($@) {
+			# UTF-8デコード失敗：バイナリとして扱う
+			warn "Failed to decode file $filename: $@";
+			@lines = split(/\n/, $content);
+			@lines = map { $_ . "\n" } @lines;
+		}
 	}
 
 	return @lines;

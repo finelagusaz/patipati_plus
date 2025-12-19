@@ -16,8 +16,8 @@ if ($ENV{'REQUEST_METHOD'} eq "POST") {
 	read(STDIN, $formdata, $ENV{'CONTENT_LENGTH'});
 } else { $formdata = $ENV{'QUERY_STRING'}; }
 @pairs = split(/&/,$formdata);
-foreach $pair (@pairs) {
-	($name, $value) = split(/=/, $pair);
+foreach my $pair (@pairs) {
+	my ($name, $value) = split(/=/, $pair);
 	$value =~ tr/+/ /;
 	$value =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
 	$value =~ s/</&lt;/g;
@@ -94,7 +94,7 @@ sub menu {
 	# ビューリンク作成
 		$vlink = ""; $mlink = ""; $last_m = "";
 		foreach (@wfilesw){
-			($yymmw,$dmy) = split(/\./,$_);
+			my ($yymmw, $dmy) = split(/\./,$_);
 			$ymw = substr($yymmw,0,4) .substr($yymmw,4,2);
 			$ymw2 = substr($yymmw,0,4) .'/' .substr($yymmw,4,2);
 			if($last_m != $ymw){
@@ -148,11 +148,6 @@ sub view {
 	$log_file = $log_dir .$QUERY{'yymmdd'} .'.log'; # ログファイル
 	# ブラックリストファイル読み込み（エンコーディング自動検出）
 		@blists = &read_file_auto_encoding($ip_ck_file);
-		if (@blists == 0 && -e $ip_ck_file) {
-			open(BLT,"<:utf8", "$ip_ck_file") || &error('FILE OPEN ERROR - blasklist');
-			@blists = <BLT>;
-			close(BLT);
-		}
 	# データ表示
 		if($QUERY{'yymm'} ne ""){ # 月データ表示
 			&log_shushu;
@@ -162,7 +157,7 @@ sub view {
 			';
 			$gokei = 0; @wks = ();
 			foreach (@wfilesw){
-				($yymmw,$dmy) = split(/\./,$_);
+				my ($yymmw, $dmy) = split(/\./,$_);
 				$ymw = substr($yymmw,0,4) .substr($yymmw,4,2);
 				if($QUERY{'yymm'} == $ymw){
 					$now_date = substr($yymmw,0,4) .'/' .substr($yymmw,4,2);
@@ -173,30 +168,25 @@ sub view {
 						$comm = ""; $shokei = 0;
 						# エンコーディング自動検出で読み込み
 						@logs = &read_file_auto_encoding($log_filew);
-						if (@logs == 0) {
-							open(LOG,"<:utf8", "$log_filew") || &error('FILE OPEN ERROR - log');
-							@logs = <LOG>;
-							close(LOG);
-						}
 						foreach (@logs) {
-							($jikanw,$user_ipw,$kaisuw,$comw) = split("<>",$_);
+							my ($jikanw, $user_ipw, $kaisuw, $comw) = split("<>",$_);
 							if($comw ne ""){
 								@coms = split(/<#>/,$comw);
 								# crypt
-									$ic = length($user_ipw) / 8;
+									my $ic = length($user_ipw) / 8;
 									if(length($user_ipw) % 8 != 0){ $ic++; }
-									$i = 0; $user_ipc = "";
+									my $i = 0; $user_ipc = "";
 									while($i <= $ic){
-										$keta = $i*8;
+										my $keta = $i*8;
 										$user_ipc .= crypt(substr($user_ipw,$keta,8),$salt);
 										$i++;
 									}
-								foreach $cw (@coms){
+								foreach my $cw (@coms){
 									if($cw ne ""){
 										if($ip_ck == 1){
 											$bw = "<a href=\"$cgi_file?mode=bin&day=$ymd&ip=$user_ipc\">ブラックリストへ</a>";
-											foreach $bk(@blists){
-												($n_ip,$c_ip) = split(/<>/,$bk);
+											foreach my $bk(@blists){
+												my ($n_ip, $c_ip) = split(/<>/,$bk);
 												if($c_ip eq $user_ipc){ $cw = "<font color=\"#ffffff\">$cw</font>"; $bw = "<b><font color=\"#cc3300\">BLACK!</font></b><a href=\"$cgi_file?mode=bout&ip=$user_ipc\">解除</a>"; last; }
 											}
 											$cw .= " ⇒$bw";
@@ -225,7 +215,7 @@ sub view {
 					<tr><td bgcolor="#eeeeee" align="middle" nowrap>回数</td><td bgcolor="#eeeeee" align="middle">日数</td></tr>
 				';
 				$shokei = 0; $last_data = "";
-				foreach $kw (@wks) {
+				foreach my $kw (@wks) {
 					if($last_data ne "" && $kw ne $last_data){
 						$width = int($shokei / $hiritsu);
 						$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_data回</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei日</td></tr>\n";
@@ -242,18 +232,13 @@ sub view {
 		else{ # 日データ表示
 			# エンコーディング自動検出で読み込み
 			@logs = &read_file_auto_encoding($log_file);
-			if (@logs == 0 && -e $log_file) {
-				open(LOG,"<:utf8", "$log_file") || &error('FILE OPEN ERROR - log');
-				@logs = <LOG>;
-				close(LOG);
-			}
 			$view_data = '
 				<table cellspacing=1 cellpadding=4 border=0 bgcolor="#666666">
 				<tr><td bgcolor="#eeeeee" align="middle" nowrap>時間</td><td bgcolor="#eeeeee" align="middle" nowrap>回数</td><td bgcolor="#eeeeee" align="middle">コメント</td></tr>
 			';
 			$gokei = 0; $comm = ""; $last_time = ""; $shokei = 0; @wks = ();
 			foreach (@logs) {
-				($jikanw,$user_ipw,$kaisuw,$comw) = split("<>",$_);
+				my ($jikanw, $user_ipw, $kaisuw, $comw) = split("<>",$_);
 				if($last_time ne "" && $jikanw ne $last_time){
 					if($comm ne ""){ $comm = substr($comm,0,-19); }
 					$width = int($shokei / $hiritsu);
@@ -262,21 +247,21 @@ sub view {
 				}
 				if($comw ne ""){
 					@coms = split(/<#>/,$comw);
-					foreach $cw (@coms){
+					foreach my $cw (@coms){
 						if($cw ne ""){
 							if($ip_ck == 1){
 								# crypt
-									$ic = length($user_ipw) / 8;
+									my $ic = length($user_ipw) / 8;
 									if(length($user_ipw) % 8 != 0){ $ic++; }
-									$i = 0; $user_ipc = "";
+									my $i = 0; $user_ipc = "";
 									while($i <= $ic){
-										$keta = $i*8;
+										my $keta = $i*8;
 										$user_ipc .= crypt(substr($user_ipw,$keta,8),$salt);
 										$i++;
 									}
 								$bw = "<a href=\"$cgi_file?mode=bin&day=$QUERY{'yymmdd'}&ip=$user_ipc\">ブラックリストへ</a>";
-								foreach $bk(@blists){
-									($n_ip,$c_ip) = split(/<>/,$bk);
+								foreach my $bk(@blists){
+									my ($n_ip, $c_ip) = split(/<>/,$bk);
 									if($c_ip eq $user_ipc){ $cw = "<font color=\"#ffffff\">$cw</font>"; $bw = "<b><font color=\"#cc3300\">BLACK!</font></b><a href=\"$cgi_file?mode=bout&ip=$user_ipc\">解除</a>"; last; }
 								}
 								$cw .= " ⇒$bw";
@@ -303,7 +288,7 @@ sub view {
 					<tr><td bgcolor="#eeeeee" align="middle" nowrap>回数</td><td bgcolor="#eeeeee" align="middle">日数</td></tr>
 				';
 				$shokei = 0; $last_data = "";
-				foreach $kw (@wks) {
+				foreach my $kw (@wks) {
 					if($last_data ne "" && $kw ne $last_data){
 						$width = int($shokei / $hiritsu);
 						$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_data回</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei日</td></tr>\n";
@@ -368,7 +353,7 @@ sub log_shushu{
 		}
 	}else{
 		@files = glob("$log_dir*");
-		$i = @files;
+		my $i = @files;
 		@wfiles = ();
 		foreach (@files){
 			@dmy = split(/\//,$_);
@@ -389,20 +374,15 @@ sub bin{
 	if(-e $log_file){
 		# エンコーディング自動検出で読み込み
 		@logs = &read_file_auto_encoding($log_file);
-		if (@logs == 0) {
-			open(LOG,"<:utf8", "$log_file") || &error('FILE OPEN ERROR - log');
-			@logs = <LOG>;
-			close(LOG);
-		}
 		$ipw = "";
 		foreach (@logs) {
-			($jikanw,$user_ipw,$kaisuw,$comw) = split("<>",$_);
+			my ($jikanw, $user_ipw, $kaisuw, $comw) = split("<>",$_);
 			# crypt
-				$ic = length($user_ipw) / 8;
+				my $ic = length($user_ipw) / 8;
 				if(length($user_ipw) % 8 != 0){ $ic++; }
-				$i = 0; $user_ipc = "";
+				my $i = 0; $user_ipc = "";
 				while($i <= $ic){
-					$keta = $i*8;
+					my $keta = $i*8;
 					$user_ipc .= crypt(substr($user_ipw,$keta,8),$salt);
 					$i++;
 				}
@@ -411,11 +391,6 @@ sub bin{
 	}
 	# エンコーディング自動検出で読み込み
 	@blists = &read_file_auto_encoding($ip_ck_file);
-	if (@blists == 0 && -e $ip_ck_file) {
-		open(BLT,"<:utf8", "$ip_ck_file") || &error('FILE OPEN ERROR - blasklist');
-		@blists = <BLT>;
-		close(BLT);
-	}
 	if($ip_ck_su != 0){ while(@blists >= $ip_ck_su){ pop @blists; } }
 	unshift(@blists,"$ipw<>$QUERY{'ip'}<>\n");
 	open(OUT,">:utf8", "$ip_ck_file") || &error('FILE OPEN ERROR - blasklist');
@@ -429,14 +404,9 @@ sub bin{
 sub bout{
 	# エンコーディング自動検出で読み込み
 	@blists = &read_file_auto_encoding($ip_ck_file);
-	if (@blists == 0 && -e $ip_ck_file) {
-		open(BLT,"<:utf8", "$ip_ck_file") || &error('FILE OPEN ERROR - blasklist');
-		@blists = <BLT>;
-		close(BLT);
-	}
 	@news = ();
 	foreach (@blists){
-		($n_ip,$c_ip) = split(/<>/,$_);
+		my ($n_ip, $c_ip) = split(/<>/,$_);
 		if($c_ip ne $QUERY{'ip'}){ push(@news,$_); }
 	}
 	open(OUT,">:utf8", "$ip_ck_file") || &error('FILE OPEN ERROR - blasklist');
@@ -450,14 +420,9 @@ sub bout{
 sub blist{
 	# エンコーディング自動検出で読み込み
 	@blists = &read_file_auto_encoding($ip_ck_file);
-	if (@blists == 0 && -e $ip_ck_file) {
-		open(BLT,"<:utf8", "$ip_ck_file") || &error('FILE OPEN ERROR - blasklist');
-		@blists = <BLT>;
-		close(BLT);
-	}
 	$bdata = "";
-	foreach $bk(@blists){
-		($n_ip,$c_ip) = split(/<>/,$bk);
+	foreach my $bk(@blists){
+		my ($n_ip, $c_ip) = split(/<>/,$bk);
 		$bdata .= "<tr><td bgcolor=\"#ffffff\">$c_ip</td><td bgcolor=\"#ffffff\"><a href=\"$cgi_file?mode=bout&ip=$c_ip\">解除</a></td></tr>";
 	}
 	binmode(STDOUT, ":utf8");
@@ -495,14 +460,14 @@ EOM
 #===============================クッキーの取得===========================
 sub get_cookie{
 	@pairs = split(/\;/, $ENV{'HTTP_COOKIE'});
-	foreach $pair (@pairs) {
-		local($name, $value) = split(/\=/, $pair);
+	foreach my $pair (@pairs) {
+		my ($name, $value) = split(/\=/, $pair);
 		$name =~ s/ //g;
 		$DUMMY{$name} = $value;
 	}
 	@pairs = split(/\,/, $DUMMY{$cookie_name});
-	foreach $pair (@pairs) {
-		local($name, $value) = split(/<>/, $pair);
+	foreach my $pair (@pairs) {
+		my ($name, $value) = split(/<>/, $pair);
 		$COOKIE{$name} = $value;
 	}
 }

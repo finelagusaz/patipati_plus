@@ -15,8 +15,8 @@ if ($ENV{'REQUEST_METHOD'} eq "POST") {
 	read(STDIN, $formdata, $ENV{'CONTENT_LENGTH'});
 } else { $formdata = $ENV{'QUERY_STRING'}; }
 @pairs = split(/&/,$formdata);
-foreach $pair (@pairs) {
-	($name, $value) = split(/=/, $pair);
+foreach my $pair (@pairs) {
+	my ($name, $value) = split(/=/, $pair);
 	$value =~ tr/+/ /;
 	$value =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
 	$value =~ s/</&lt;/g;
@@ -60,7 +60,7 @@ foreach $pair (@pairs) {
 
 			}
 	if($COOKIE{'f'} == 1){
-		open(HTML,"<:utf8", "$last_file") || die "ファイルオープンに失敗しました - design";
+		open(HTML,"<:utf8", "$last_file") || &error("ファイルオープンに失敗しました - $last_file");
 		@htmls = <HTML>;
 		close(HTML);
 	}else{
@@ -72,46 +72,27 @@ foreach $pair (@pairs) {
 			&del_logs;
 		$gn = &get_date($time_w);
 		$user_ipg = $ENV{'REMOTE_ADDR'};
-		# crypt
-			$ic = length($user_ipg) / 8;
-			if(length($user_ipg) % 8 != 0){ $ic++; }
-			$i = 0; $crypt_ip = "";
-			while($i <= $ic){
-				$keta = $i*8;
-				$crypt_ip .= crypt(substr($user_ipg,$keta,8),$salt);
-				$i++;
-			}
+		$crypt_ip = &encrypt_ip($user_ipg);
 		# ブラックリスト判断
 			$bk_ck = 0;
 			if($ip_ck == 1){
 				# エンコーディング自動検出で読み込み
 				@blists = &read_file_auto_encoding($ip_ck_file);
-				if (@blists == 0 && -e $ip_ck_file) {
-					open(BLT,"<:utf8", "$ip_ck_file") || &error('FILE OPEN ERROR - Black List');
-					@blists = <BLT>;
-					close(BLT);
-				}
 			}
 
-			#URLスパム対策
-			if($kickurl eq 1) {
-			if($QUERY{'com'} =~ "http") {&error('URLが含む文字列はスパム対策のためそのままでは送信できません。<br>頭のhを消すなど工夫してみてください。'); }
-			}
-			#変数：半角対策
-			if($delspam ne "0") {
-			if(($QUERY{'com'} ne "") && ($QUERY{'com'} !~ m/[\x80-\xff]/)) {&error('変数：半角のみ引っ掛けはスパム禁止のため送信できません。'); }
-			}
+			# スパム対策チェック
+			&check_spam($QUERY{'com'}, $kickurl, $delspam);
 
-			foreach $bk(@blists){
-				($n_ip,$c_ip) = split(/<>/,$bk);
+			foreach my $bk(@blists){
+				my ($n_ip, $c_ip) = split(/<>/,$bk);
 				if($c_ip eq $crypt_ip){ $bk_ck = 1; last; }
 			}
 
 		if($ip_ck == 1 && $bk_ck == 1 && $ip_ck_msg ne ""){ &error("$ip_ck_msg"); }
 		if($bk_ck == 0){
-			$i = 1;
+			my $i = 1;
 			while($i <= $sub_su){
-				$wk = 'sub' .$i;
+				my $wk = 'sub' .$i;
 				if($QUERY{$wk} ne ""){
 					$QUERY{$wk} =~ s/\r\n//g;
 					$QUERY{$wk} =~ s/\r//g;
@@ -132,7 +113,7 @@ foreach $pair (@pairs) {
 
 			$ng_ck = 0;
 			if($msg ne ""){
-				foreach $ngw (@ngs){
+				foreach my $ngw (@ngs){
 					$ngw =~ tr/A-Z/a-z/;
 					if($ngw ne "" && index($msgw,$ngw) >= 0){ $ng_ck = 1; }
 				}
@@ -152,25 +133,11 @@ foreach $pair (@pairs) {
 				}
 				# エンコーディング自動検出で読み込み（既存ログとの互換性のため）
 				@logs = &read_file_auto_encoding($log_file);
-				if (@logs == 0 && -e $log_file) {
-					# ファイルが存在するが読み込めなかった場合のフォールバック
-					open(LOG,"<:utf8", "$log_file") || &error('FILE OPEN ERROR - log');
-					@logs = <LOG>;
-					close(LOG);
-				}
 				@news = ();
 				$kaisu = 1;
 				foreach (@logs) {
-					($jikanw,$user_ipw,$kaisuw,$comw) = split("<>",$_);
-					# crypt
-						$ic = length($user_ipw) / 8;
-						if(length($user_ipw) % 8 != 0){ $ic++; }
-						$i = 0; $user_ipc = "";
-						while($i <= $ic){
-							$keta = $i*8;
-							$user_ipc .= crypt(substr($user_ipw,$keta,8),$salt);
-							$i++;
-					}
+					my ($jikanw, $user_ipw, $kaisuw, $comw) = split("<>",$_);
+					$user_ipc = &encrypt_ip($user_ipw);
 					if($user_ipg eq $user_ipw && $jikanw eq $jikan){
 						$kaisu = $kaisuw + 1;
 						if($QUERY{'com'} ne ""){ $QUERY{'com'} = $comw ."<#>$QUERY{'com'}"; }
@@ -185,55 +152,38 @@ foreach $pair (@pairs) {
 					close(OUT);
 				}
 
-			#URLスパム対策
-			if($kickurl eq 1) {
-			if($QUERY{'com'} =~ "http") {&error('URLが含む文字列はスパム対策のためそのままでは送信できません。<br>頭のhを消すなど工夫してみてください。'); }
-			}
-			#変数：半角対策
-			if($delspam ne "0") {
-			if(($QUERY{'com'} ne "") && ($QUERY{'com'} !~ m/[\x80-\xff]/)) {&error('変数：半角のみ引っ掛けはスパム禁止のため送信できません。'); }
-			}
-
 				&unlock; # ロック解除
 				if($msg ne "" && $mail_ck == 1){ &mail; }
 			}
 	  }
-		$ifile = @location_files;
+		my $ifile = @location_files;
 		if($locate_rand == 1){
 			srand;
-			$r = int(rand($ifile));
+			my $r = int(rand($ifile));
 			$location_file = @location_files[$r];
 		}elsif($locate_rand == 2){
-			$i = $kaisu;
+			my $i = $kaisu;
 			$location_file = @location_files[$i-1];
 			if($i >= $ifile){ $location_file = @location_files[$ifile-1]; }
 		}else{
-			$i = $kaisu;
+			my $i = $kaisu;
 			while($i > $ifile){ $i -= $ifile; }
 			$location_file = @location_files[$i-1];
 		}
 		if($clap_su != 0 && $kaisu >= $clap_su){
 			&set_cookie();
-			open(HTML,"<:utf8", "$last_file") || die "ファイルオープンに失敗しました - design";
+			open(HTML,"<:utf8", "$last_file") || &error("ファイルオープンに失敗しました - $last_file");
 			@htmls = <HTML>;
 			close(HTML);
 		}else{
-			open(HTML,"<:utf8", "$location_file") || die "ファイルオープンに失敗しました - design";
+			open(HTML,"<:utf8", "$location_file") || &error("ファイルオープンに失敗しました - $location_file");
 			@htmls = <HTML>;
 			close(HTML);
 		}
 	}
 
-			#変数：半角対策
-			if($delspam ne "0") {
-			if(($msg ne "") && ($QUERY{'com'} !~ m/[\x80-\xff]/)) {&error('変数：半角のみ引っ掛けはスパム禁止のため送信できません。'); }
-			}
-
-
-			#URLスパム対策
-			if($kickurl eq 1) {
-			if($msg =~ "http") {&error('URLが含む文字列はスパム対策のためそのままでは送信できません。<br>頭のhを消すなど工夫してみてください。'); }
-			};
+			# スパム対策チェック（$msgに対して、半角チェック無効で実行）
+			&check_spam($msg, $kickurl, "1");
 
 	if ($msg ne "") {
 		$msg_in = $msg;
@@ -288,8 +238,8 @@ sub mail{
 	my $subject_jis = encode('iso-2022-jp', $subject);
 	my $msg_jis = encode('iso-2022-jp', $msg);
 
-	foreach $mlw (@mailtos){
-		$mailtow = $mlw;
+	foreach my $mlw (@mailtos){
+		my $mailtow = $mlw;
 		if (!open(MAIL,"| $sendmail $mailtow")) { &error('何らかの原因で送信できませんでした。'); }
 			print MAIL "X-Mailer: GNBSys\n";
 			print MAIL "To: $mailtow\n";
@@ -305,14 +255,14 @@ sub mail{
 #===============================クッキーの取得===========================
 sub get_cookie{
 	@pairs = split(/\;/, $ENV{'HTTP_COOKIE'});
-	foreach $pair (@pairs) {
-		local($name, $value) = split(/\=/, $pair);
+	foreach my $pair (@pairs) {
+		my ($name, $value) = split(/\=/, $pair);
 		$name =~ s/ //g;
 		$DUMMY{$name} = $value;
 	}
 	@pairs = split(/\,/, $DUMMY{$cookie_name});
-	foreach $pair (@pairs) {
-		local($name, $value) = split(/<>/, $pair);
+	foreach my $pair (@pairs) {
+		my ($name, $value) = split(/<>/, $pair);
 		$COOKIE{$name} = $value;
 	}
 }
