@@ -67,7 +67,7 @@ sub html {
 	# 古いデータ削除
 		&del_logs;
 	if($QUERY{'yymmdd'} eq ""){ $QUERY{'yymmdd'} = $nen .$tsuki .$hi; }
-	$log_file = $log_dir .$QUERY{'yymmdd'} .'.log'; # ログファイル
+	$log_file = $log_dir .$QUERY{'yymmdd'} .'.cgi'; # ログファイル
 
 
 	binmode(STDOUT, ":utf8");
@@ -145,7 +145,7 @@ sub view {
 	if($hiritsu <= 0){ $hiritsu = 1; }
 	if($QUERY{'yymmdd'} eq ""){ $QUERY{'yymmdd'} = $nen .$tsuki .$hi; }
 	$now_date = substr($QUERY{'yymmdd'},0,4) .'/' .substr($QUERY{'yymmdd'},4,2) .'/' .substr($QUERY{'yymmdd'},6,2);
-	$log_file = $log_dir .$QUERY{'yymmdd'} .'.log'; # ログファイル
+	$log_file = $log_dir .$QUERY{'yymmdd'} .'.cgi'; # ログファイル
 	# ブラックリストファイル読み込み（エンコーディング自動検出）
 		@blists = &read_file_auto_encoding($ip_ck_file);
 	# データ表示
@@ -163,7 +163,7 @@ sub view {
 					$now_date = substr($yymmw,0,4) .'/' .substr($yymmw,4,2);
 					$dw = substr($yymmw,6,2);
 					$ymd = $ymw .$dw;
-					$log_filew = $log_dir .$ymd .'.log'; # ログファイル
+					$log_filew = $log_dir .$ymd .'.cgi'; # ログファイル
 					if(-e $log_filew){
 						$comm = ""; $shokei = 0;
 						# エンコーディング自動検出で読み込み
@@ -202,7 +202,7 @@ sub view {
 					}
 					if($comm ne ""){ $comm = substr($comm,0,-19); }
 					$width = int($shokei / $hiritsu);
-					$view_data .= "<tr bgcolor=\"#ffffff\" valign=\"top\"><td align=\"right\" nowrap><a href=\"$cgi_file?mode=view&yymmdd=$QUERY{'yymm'}$dw\">$dw日</a></td><td nowrap><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei回</td><td>$comm</td></tr>\n";
+					$view_data .= "<tr bgcolor=\"#ffffff\" valign=\"top\"><td align=\"right\" nowrap><a href=\"" . $cgi_file . "?mode=view&yymmdd=" . $QUERY{'yymm'} . $dw . "\">" . $dw . "日</a></td><td nowrap><img src=\"" . $graph . "\" height=\"12\" width=\"" . $width . "\">&nbsp;" . $shokei . "回</td><td>" . $comm . "</td></tr>\n";
 				}
 			}
 			$view_data .= '</table>';
@@ -218,14 +218,14 @@ sub view {
 				foreach my $kw (@wks) {
 					if($last_data ne "" && $kw ne $last_data){
 						$width = int($shokei / $hiritsu);
-						$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_data回</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei日</td></tr>\n";
+						$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>" . $last_data . "回</td><td><img src=\"" . $graph . "\" height=\"12\" width=\"" . $width . "\">&nbsp;" . $shokei . "日</td></tr>\n";
 						$shokei = 0;
 					}
 					$shokei++;
 					$last_data = $kw;
 				}
 			$width = int($shokei / $hiritsu);
-			$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_data回</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei日</td></tr>\n";
+			$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>" . $last_data . "回</td><td><img src=\"" . $graph . "\" height=\"12\" width=\"" . $width . "\">&nbsp;" . $shokei . "日</td></tr>\n";
 			$view_data .= '</table>';
 			}
 		}
@@ -242,7 +242,7 @@ sub view {
 				if($last_time ne "" && $jikanw ne $last_time){
 					if($comm ne ""){ $comm = substr($comm,0,-19); }
 					$width = int($shokei / $hiritsu);
-					$view_data .= "<tr bgcolor=\"#ffffff\" valign=\"top\"><td align=\"right\" nowrap>$last_time時</td><td nowrap><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei回</td><td>$comm</td></tr>\n";
+					$view_data .= "<tr bgcolor=\"#ffffff\" valign=\"top\"><td align=\"right\" nowrap>" . $last_time . "時</td><td nowrap><img src=\"" . $graph . "\" height=\"12\" width=\"" . $width . "\">&nbsp;" . $shokei . "回</td><td>" . $comm . "</td></tr>\n";
 					$comm = ""; $last_time = ""; $shokei = 0;
 				}
 				if($comw ne ""){
@@ -277,7 +277,7 @@ sub view {
 			}
 			if($comm ne ""){ $comm = substr($comm,0,-19); }
 			$width = int($shokei / $hiritsu);
-			$view_data .= "<tr bgcolor=\"#ffffff\" valign=\"top\"><td align=\"right\" nowrap>$last_time時</td><td nowrap><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei回</td><td>$comm</td></tr>\n";
+			$view_data .= "<tr bgcolor=\"#ffffff\" valign=\"top\"><td align=\"right\" nowrap>" . $last_time . "時</td><td nowrap><img src=\"" . $graph . "\" height=\"12\" width=\"" . $width . "\">&nbsp;" . $shokei . "回</td><td>" . $comm . "</td></tr>\n";
 			$view_data .= '</table>';
 			if($gokei <= 0){ $view_data = '記録はありませんでした。'; }
 			else{
@@ -291,14 +291,14 @@ sub view {
 				foreach my $kw (@wks) {
 					if($last_data ne "" && $kw ne $last_data){
 						$width = int($shokei / $hiritsu);
-						$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_data回</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei日</td></tr>\n";
+						$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>" . $last_data . "回</td><td><img src=\"" . $graph . "\" height=\"12\" width=\"" . $width . "\">&nbsp;" . $shokei . "日</td></tr>\n";
 						$shokei = 0;
 					}
 					$shokei++;
 					$last_data = $kw;
 				}
 			$width = int($shokei / $hiritsu);
-			$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>$last_data回</td><td><img src=\"$graph\" height=\"12\" width=\"$width\">&nbsp;$shokei日</td></tr>\n";
+			$view_data .= "<tr bgcolor=\"#ffffff\"><td align=\"right\" nowrap>" . $last_data . "回</td><td><img src=\"" . $graph . "\" height=\"12\" width=\"" . $width . "\">&nbsp;" . $shokei . "日</td></tr>\n";
 			$view_data .= '</table>';
 			}
 		}
@@ -370,7 +370,7 @@ sub log_shushu{
 
 #===============================ブラックリスト記録===========================
 sub bin{
-	$log_file = $log_dir .$QUERY{'day'} .'.log'; # ログファイル
+	$log_file = $log_dir .$QUERY{'day'} .'.cgi'; # ログファイル
 	if(-e $log_file){
 		# エンコーディング自動検出で読み込み
 		@logs = &read_file_auto_encoding($log_file);

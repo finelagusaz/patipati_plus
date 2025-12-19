@@ -41,7 +41,7 @@ sub check_spam {
 
 	# 半角のみスパム対策
 	if ($delspam ne "0") {
-		if (($text ne "") && ($text !~ m/[\x80-\xff]/)) {
+		if (($text ne "") && ($text !~ m/[^\x00-\x7f]/)) {
 			&error('変数：半角のみ引っ掛けはスパム禁止のため送信できません。');
 		}
 	}
@@ -56,7 +56,8 @@ sub read_file_auto_encoding {
 	return () unless -e $filename;
 
 	# ファイルをバイナリモードで読み込み
-	unless (open(my $fh, '<', $filename)) {
+	my $fh;
+	unless (open($fh, '<', $filename)) {
 		warn "Cannot open file $filename: $!";
 		return ();
 	}
@@ -73,18 +74,28 @@ sub read_file_auto_encoding {
 	if (ref($enc)) {
 		# 推測成功：デコードして返す
 		my $decoded = $enc->decode($content);
+		# Windows形式の改行を正規化（CRLF → LF）
+		$decoded =~ s/\r\n/\n/g;
+		$decoded =~ s/\r/\n/g;
 		@lines = split(/\n/, $decoded);
 		# 行末の改行を復元
 		@lines = map { $_ . "\n" } @lines;
 	} else {
 		# 推測失敗：UTF-8として試みる
 		eval {
-			@lines = split(/\n/, decode('utf8', $content, Encode::FB_CROAK));
+			my $decoded = decode('utf8', $content, Encode::FB_CROAK);
+			# Windows形式の改行を正規化（CRLF → LF）
+			$decoded =~ s/\r\n/\n/g;
+			$decoded =~ s/\r/\n/g;
+			@lines = split(/\n/, $decoded);
 			@lines = map { $_ . "\n" } @lines;
 		};
 		if ($@) {
 			# UTF-8デコード失敗：バイナリとして扱う
 			warn "Failed to decode file $filename: $@";
+			# Windows形式の改行を正規化（CRLF → LF）
+			$content =~ s/\r\n/\n/g;
+			$content =~ s/\r/\n/g;
 			@lines = split(/\n/, $content);
 			@lines = map { $_ . "\n" } @lines;
 		}
